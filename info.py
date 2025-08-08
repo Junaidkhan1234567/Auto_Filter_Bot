@@ -78,7 +78,7 @@ DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0") # Database name (defaul
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'dreamcinezone_files') # Collection name (default: dreamcinezone_files)
 
 # If MULTIPLE_DB Is True Then Fill DATABASE_URI2 Value Else You Will Get Error.
-MULTIPLE_DB = is_enabled(os.environ.get('MULTIPLE_DB', "False"), False) # Type True For Turn On MULTIPLE DB FUNTION 
+MULTIPLE_DB = is_enabled(os.environ.get('MULTIPLE_DB', "True"), False) # Type True For Turn On MULTIPLE DB FUNTION 
 DATABASE_URI2 = environ.get('DATABASE_URI2', "")  # MongoDB URI for the second database (if MULTIPLE_DB is True)
 # ============================
 # Movie Notification & Update Settings
@@ -120,9 +120,9 @@ THREE_VERIFY_GAP = int(environ.get('THREE_VERIFY_GAP', "54000"))
 # ============================
 # Channel & Group Links Configuration
 # ============================
-GRP_LNK = environ.get('GRP_LNK', 'https://t.me/dreamxbotz') # Group link for the bot
-OWNER_LNK = environ.get('OWNER_LNK', 'https://t.me/dreamxbotz') # Owner link for the bot
-UPDATE_CHNL_LNK = environ.get('UPDATE_CHNL_LNK', 'https://t.me/dreamxbotz') # Update channel link for the bot
+GRP_LNK = environ.get('GRP_LNK', 'https://t.me/thinkfilmy') # Group link for the bot
+OWNER_LNK = environ.get('OWNER_LNK', 'https://t.me/WOLVERIN_P') # Owner link for the bot
+UPDATE_CHNL_LNK = environ.get('UPDATE_CHNL_LNK', 'https://t.me/wolverine273') # Update channel link for the bot
 
 # ============================
 # User Configuration
@@ -157,7 +157,7 @@ PM_SEARCH = bool(environ.get('PM_SEARCH', True))  # PM Search On (True) / Off (F
 EMOJI_MODE = bool(environ.get('EMOJI_MODE', False))  # Emoji status On (True) / Off (False)
 BUTTON_MODE = is_enabled((environ.get('BUTTON_MODE', "False")), False) # pm & Group button or link mode (True) / Off (False)
 STREAM_MODE = bool(environ.get('STREAM_MODE', True)) # Set Stream mode True or False
-PREMIUM_STREAM_MODE = bool(environ.get('PREMIUM_STREAM_MODE', False)) # Set Stream mode True or False only for premium users
+PREMIUM_STREAM_MODE = bool(environ.get('PREMIUM_STREAM_MODE', True)) # Set Stream mode True or False only for premium users
 
 
 # ============================
@@ -223,14 +223,14 @@ else:
     ON_HEROKU = False
 HAS_SSL = bool(getenv('HAS_SSL', True))
 if HAS_SSL:
-    URL = "https://{}/".format(FQDN)
+    URL = "https://linear-elizabet-misslazy-2352602e.koyeb.app/".format(FQDN)
 else:
-    URL = "http://{}/".format(FQDN)
+    URL = "https://linear-elizabet-misslazy-2352602e.koyeb.app/".format(FQDN)
 
 # ============================
 # Reactions Configuration
 # ============================
-REACTIONS = ["🤝", "😇", "🤗", "😍", "👍", "🎅", "😐", "🥰", "🤩", "😱", "🤣", "😘", "👏", "😛", "😈", "🎉", "⚡️", "🫡", "🤓", "😎", "🏆", "🔥", "🤭", "🌚", "🆒", "👻", "😁"]
+REACTIONS = ["⚡️"]
 
 # ============================
 # Commands Bot
