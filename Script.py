@@ -217,11 +217,17 @@ Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
     
     MOVIE_UPDATE_NOTIFY_TXT = """
 </b><a href={poster_url}>📥</a><a href={imdb_url}>New {tag} Added</a></b>
-**🍿 Title:** {title}
-**🎃 Genres:** {genres}
-**📆 Year:** {year}
-**⭐ Rating:** {rating} / 10
-</b>"""
+
+✨ ᴛɪᴛʟᴇ : <code>{filename}</code>
+
+<blockquote>🎭 ɢᴇɴʀᴇs : <b>{genres}</b>
+🎞️ ǫᴜᴀʟɪᴛʏ : <b>{quality}</b>
+🎧 ᴀᴜᴅɪᴏ    : <b>{language}</b>
+🔥 ʀᴀᴛɪɴɢ   : <b>{rating}</b>
+{episodes}
+</blockquote>
+🔍 <b>Sᴇᴀʀᴄʜ →</b> {search_link}
+"""
 
 
     IMDB_TEMPLATE_TXT = """
