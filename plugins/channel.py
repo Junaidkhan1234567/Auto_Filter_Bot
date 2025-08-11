@@ -135,7 +135,7 @@ def schedule_update(bot, base_name, delay=5):
 
 def get_file_size_mb(file_size_bytes):
     """Convert bytes to MB with proper formatting"""
-    if not file_size_bytes:
+    if not file_size_bytes or file_size_bytes == 0:
         return "N/A"
     
     size_mb = file_size_bytes / (1024 * 1024)
@@ -228,11 +228,11 @@ async def media_handler(bot, message):
 
     try:
         if await db.movie_update_status(bot.me.id):
-            await process_and_send_update(bot, media.file_name, media.caption)
+            await process_and_send_update(bot, media.file_name, media.caption, media)
     except Exception:
         logger.exception("Error processing media")
 
-async def process_and_send_update(bot, filename, caption):
+async def process_and_send_update(bot, filename, caption, media):
     try:
         media_info = extract_media_info(filename, caption)
         base_name = media_info["base_name"]
@@ -240,19 +240,24 @@ async def process_and_send_update(bot, filename, caption):
 
         lock = locks[base_name]
         async with lock:
-            await _process_with_lock(bot, filename, caption, media_info, base_name, processed)
+            await _process_with_lock(bot, filename, caption, media_info, base_name, processed, media)
     except PyMongoError as e:
         logger.error("Database error: %s", e)
     except Exception as e:
         logger.exception("Processing failed: %s", e)
 
-async def _process_with_lock(bot, filename, caption, media_info, base_name, processed):
+async def _process_with_lock(bot, filename, caption, media_info, base_name, processed, media):
     if not hasattr(db, 'movie_updates'):
         db.movie_updates = db.db.movie_updates
 
     movie_doc = await db.movie_updates.find_one({"_id": base_name})
     global error_tmdb
     error_tmdb=False
+    
+    # Extract file_id and file_size from media object
+    file_id = media.file_id if hasattr(media, 'file_id') else 'unknown_id'
+    file_size = media.file_size if hasattr(media, 'file_size') else 0
+    
     file_data = {
         "filename": filename,
         "processed": processed,
@@ -262,7 +267,9 @@ async def _process_with_lock(bot, filename, caption, media_info, base_name, proc
         "timestamp": datetime.now(),
         "tag": media_info["tag"],
         "season": media_info["season"],
-        "episode": media_info["episode"]
+        "episode": media_info["episode"],
+        "file_id": file_id,
+        "file_size": file_size
     }
 
     if not movie_doc:
@@ -505,8 +512,8 @@ def generate_movie_message(movie_doc, base_name):
         for file_info in files_for_quality:
             file_size_str = get_file_size_mb(file_info['file_size'])
             
-            # Create the clickable link with file_id
-            file_link = f"<a href='https://t.me/{temp.U_NAME}?start=file_0_{file_info['file_id']}'>{file_size_str}</a>"
+            # Create the clickable link with file_id - using telegram.me format as requested
+            file_link = f"<a href='https://telegram.me/{temp.U_NAME}?start=file_{file_info['file_id']}'>{file_size_str}</a>"
             
             # Format quality display
             quality_display = quality.upper() if quality.lower() != "unknown" else "HD"
