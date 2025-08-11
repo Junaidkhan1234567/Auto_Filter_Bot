@@ -133,6 +133,18 @@ def schedule_update(bot, base_name, delay=5):
         lambda: asyncio.create_task(update_movie_message(bot, base_name))
     )
 
+def get_file_size_mb(file_size_bytes):
+    """Convert bytes to MB with proper formatting"""
+    if not file_size_bytes:
+        return "N/A"
+    
+    size_mb = file_size_bytes / (1024 * 1024)
+    if size_mb >= 1024:
+        size_gb = size_mb / 1024
+        return f"{size_gb:.2f} GB"
+    else:
+        return f"{size_mb:.2f} MB"
+
 def extract_media_info(filename: str, caption: str):
     filename = normalize(clean_mentions_links(filename).title())
     caption_clean = clean_mentions_links(caption).lower() if caption else ""
@@ -419,31 +431,95 @@ async def update_movie_message(bot, base_name):
         logger.error(f"Failed to update movie message: {e}")
 
 def generate_movie_message(movie_doc, base_name):
-    all_qualities = set()
+    # Collect all files and organize by quality
+    quality_files = {}
     all_languages = set()
-    all_ott_platforms = set()
     all_tags = set()
     episodes_by_season = defaultdict(set)
 
     for file in movie_doc["files"]:
-        if file["quality"] != "N/A":
-            all_qualities.update(q.strip() for q in file["quality"].split(",") if q.strip())
-        if file["language"] != "N/A":
+        # Extract quality from filename or file data
+        file_qualities = []
+        if file.get("quality") and file["quality"] != "N/A":
+            file_qualities = [q.strip() for q in file["quality"].split(",") if q.strip()]
+        
+        # If no quality found in file data, try to extract from filename
+        if not file_qualities:
+            filename_qualities = QUALITY_PATTERN.findall(file["filename"])
+            file_qualities = filename_qualities if filename_qualities else ["Unknown"]
+        
+        # For each quality, store the file info
+        for quality in file_qualities:
+            if quality not in quality_files:
+                quality_files[quality] = []
+            
+            quality_files[quality].append({
+                'filename': file["filename"],
+                'file_id': file.get('file_id', 'unknown_id'),
+                'file_size': file.get('file_size', 0),
+                'language': file.get("language", "N/A"),
+                'ott_platform': file.get("ott_platform", "N/A")
+            })
+
+        # Collect languages
+        if file.get("language") and file["language"] != "N/A":
             all_languages.update(l.strip() for l in file["language"].split(",") if l.strip())
-        if file["ott_platform"] != "N/A":
-            platforms = [p.strip() for p in file["ott_platform"].split("|") if p.strip()]
-            all_ott_platforms.update(platforms)
-        if file["tag"]:
+        
+        # Collect tags
+        if file.get("tag"):
             all_tags.add(file["tag"])
+        
+        # Collect episodes for series
         if file.get("season") and file.get("episode"):
             season = file["season"]
             episode = file["episode"]
             episodes_by_season[season].add(episode)
 
+    # Determine primary tag
     primary_tag = "#SERIES" if "#SERIES" in all_tags else "#MOVIE"
-    epi_block = ""
+    content_type = "SERIES" if "#SERIES" in all_tags else "MOVIE"
+    
+    # Build the new caption format
+    caption_lines = []
+    caption_lines.append("📫 𝖭𝖤𝖶 𝖥𝖨𝖫𝖤 𝖠𝖣𝖣𝖤𝖣 ✅")
+    caption_lines.append("")
+    caption_lines.append(f"🚧  Title : {base_name}")
+    
+    # Audio/Language section
+    language_str = ", ".join(sorted(all_languages)) if all_languages else "English"
+    caption_lines.append(f"🎧 𝖠𝗎𝖽𝗂𝗈 : {language_str}")
+    
+    # Type section
+    caption_lines.append(f"🔖 Type : {content_type}")
+    caption_lines.append("🚀 Telegram Files ✨")
+    caption_lines.append("")
+    
+    # Quality files section with clickable links
+    file_counter = 0
+    for quality in sorted(quality_files.keys(), key=lambda x: (
+        0 if 'hevc' in x.lower() else 1,  # HEVC first
+        -int(re.search(r'(\d+)p', x.lower()).group(1)) if re.search(r'(\d+)p', x.lower()) else 999  # Higher resolution first
+    )):
+        files_for_quality = quality_files[quality]
+        
+        for file_info in files_for_quality:
+            file_size_str = get_file_size_mb(file_info['file_size'])
+            
+            # Create the clickable link with file_id
+            file_link = f"<a href='https://t.me/{temp.U_NAME}?start=file_0_{file_info['file_id']}'>{file_size_str}</a>"
+            
+            # Format quality display
+            quality_display = quality.upper() if quality.lower() != "unknown" else "HD"
+            if "hevc" in quality.lower():
+                quality_display = quality_display.replace("HEVC", "").strip() + " HEVC"
+            
+            caption_lines.append(f"📦 {quality_display} : {file_link}")
+            caption_lines.append("")
+            file_counter += 1
+    
+    # Add episodes section for series
     if episodes_by_season:
-        episode_lines = []
+        caption_lines.append("📺 Episodes Available:")
         for season, episodes in sorted(episodes_by_season.items(), key=lambda x: int(x[0])):
             singles = []
             ranges = []
@@ -472,38 +548,11 @@ def generate_movie_message(movie_doc, base_name):
                 collapsed.append(str(start) if start == end else f"{start}-{end}")
 
             all_ep_parts = collapsed + sorted(ranges, key=lambda s: int(s.split("-")[0]))
-            episode_lines.append(f"S{int(season)}: {', '.join(all_ep_parts)}")
-
-        epi_str = "\n".join(episode_lines)
-        if epi_str:
-            epi_block = f"📺 ᴇᴘɪsᴏᴅᴇs : <b>\n{epi_str}</b>"
-
-    genres = movie_doc.get("genres", "N/A")
+            caption_lines.append(f"Season {int(season)}: Episodes {', '.join(all_ep_parts)}")
+        caption_lines.append("")
     
-    # Modified quality section to make each quality clickable
-    if all_qualities:
-        quality_links = []
-        for quality in sorted(all_qualities):
-            quality_link = f'<a href="https://t.me/{temp.U_NAME}?start=getfile-{base_name.replace(" ", "-")}">{quality}</a>'
-            quality_links.append(quality_link)
-        quality_str = ", ".join(quality_links)
-    else:
-        quality_str = "N/A"
+    # Footer
+    caption_lines.append("〽️ Powered by @WOLVERIN_P")
     
-    language_str = ", ".join(sorted(all_languages)) if all_languages else "N/A"
-    ott_str = ", ".join(sorted(all_ott_platforms)) if all_ott_platforms else "N/A"
-
-    return script.MOVIE_UPDATE_NOTIFY_TXT.format(
-        poster_url=movie_doc.get("poster_url", ""),
-        imdb_url=movie_doc.get("imdb_url", ""),
-        filename=base_name,
-        tag=primary_tag,
-        genres=genres,
-        ott=ott_str,
-        quality=quality_str,
-        language=language_str,
-        episodes=epi_block,
-        rating=movie_doc.get("rating", "N/A"),
-        search_link=temp.B_LINK
-    )
+    return "\n".join(caption_lines)
 
