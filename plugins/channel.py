@@ -479,7 +479,17 @@ def generate_movie_message(movie_doc, base_name):
             epi_block = f"📺 ᴇᴘɪsᴏᴅᴇs : <b>\n{epi_str}</b>"
 
     genres = movie_doc.get("genres", "N/A")
-    quality_str = ", ".join(sorted(all_qualities)) if all_qualities else "N/A"
+    
+    # Modified quality section to make each quality clickable
+    if all_qualities:
+        quality_links = []
+        for quality in sorted(all_qualities):
+            quality_link = f'<a href="https://t.me/{temp.U_NAME}?start=getfile-{base_name.replace(" ", "-")}">{quality}</a>'
+            quality_links.append(quality_link)
+        quality_str = ", ".join(quality_links)
+    else:
+        quality_str = "N/A"
+    
     language_str = ", ".join(sorted(all_languages)) if all_languages else "N/A"
     ott_str = ", ".join(sorted(all_ott_platforms)) if all_ott_platforms else "N/A"
 
@@ -496,3 +506,4 @@ def generate_movie_message(movie_doc, base_name):
         rating=movie_doc.get("rating", "N/A"),
         search_link=temp.B_LINK
     )
+
