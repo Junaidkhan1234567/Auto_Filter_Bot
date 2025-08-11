@@ -518,7 +518,7 @@ def generate_movie_message(movie_doc, base_name):
             # Format quality display
             quality_display = quality.upper() if quality.lower() != "unknown" else "HD"
             if "hevc" in quality.lower():
-                quality_display = quality_display.replace("HEVC", "").strip() + " HEVC"
+                quality_display = quality_display.replace("480p", "720p", "720p HEVC", "1080p", "1080p HEVC", "2160p").strip() + " HEVC"
             
             caption_lines.append(f"📦 {quality_display} : {file_link}")
             caption_lines.append("")
