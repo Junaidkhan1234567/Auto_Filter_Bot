@@ -215,19 +215,12 @@ Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
     CAPTION = """<b><a href="https://t.me/wolverine273">{file_name}</a></b>\n\n<b>⚜️ Powered By : <a href="https://t.me/WOLVERIN_P">[ WOLVERINE 🌿 ]</a></b>"""
 
     
-    MOVIE_UPDATE_NOTIFY_TXT = """
-</b><a href={poster_url}>📥</a><a href={imdb_url}>New {tag} Added</a></b>
-
-✨ ᴛɪᴛʟᴇ : <code>{filename}</code>
-
-<blockquote>🎭 ɢᴇɴʀᴇs : <b>{genres}</b>
-🎞️ ǫᴜᴀʟɪᴛʏ : <b>{quality}</b>
-🎧 ᴀᴜᴅɪᴏ    : <b>{language}</b>
-🔥 ʀᴀᴛɪɴɢ   : <b>{rating}</b>
-{episodes}
-</blockquote>
-🔍 <b>Sᴇᴀʀᴄʜ →</b> {search_link}
-"""
+    MOVIES_UPDATE_TXT = """<b>#𝑵𝒆𝒘_𝑭𝒊𝒍𝒆_𝑨𝒅𝒅𝒆𝒅 ✅
+**🍿 Title:** {title}
+**🎃 Genres:** {genres}
+**📆 Year:** {year}
+**⭐ Rating:** {rating} / 10
+</b>"""
 
 
     IMDB_TEMPLATE_TXT = """
