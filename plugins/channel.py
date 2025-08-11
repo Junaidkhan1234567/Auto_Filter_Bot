@@ -513,7 +513,7 @@ def generate_movie_message(movie_doc, base_name):
             file_size_str = get_file_size_mb(file_info['file_size'])
             
             # Create the clickable link with file_id - using telegram.me format as requested
-            file_link = f"<a href=\'https://telegram.me/{temp.U_NAME}?start=file_0_{file_info[\'file_id\]}\''>{file_size_str}</a>"
+            file_link = f"<a href=\'https://telegram.me/{temp.U_NAME}?start=file_0_{file_info[\\'file_id\\']}\''>{file_size_str}</a>"
             
             # Format quality display
             quality_display = quality.upper() if quality.lower() != "unknown" else "HD"
