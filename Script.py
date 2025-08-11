@@ -215,7 +215,7 @@ Mᴇꜱꜱᴀɢᴇ : <b>{}</b>"""
     CAPTION = """<b><a href="https://t.me/wolverine273">{file_name}</a></b>\n\n<b>⚜️ Powered By : <a href="https://t.me/WOLVERIN_P">[ WOLVERINE 🌿 ]</a></b>"""
 
     
-    MOVIES_UPDATE_TXT = """<b>#𝑵𝒆𝒘_𝑭𝒊𝒍𝒆_𝑨𝒅𝒅𝒆𝒅 ✅
+    MOVIE_UPDATE_NOTIFY_TXT = """<b>#𝑵𝒆𝒘_𝑭𝒊𝒍𝒆_𝑨𝒅𝒅𝒆𝒅 ✅
 **🍿 Title:** {title}
 **🎃 Genres:** {genres}
 **📆 Year:** {year}
