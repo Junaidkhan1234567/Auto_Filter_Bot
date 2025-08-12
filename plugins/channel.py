@@ -335,36 +335,52 @@ async def send_movie_update(bot, base_name):
             if not movie_doc:
                 return None
 
-             # YAHAN PAR LINE ADD KARNI HAI
             text = generate_movie_message(movie_doc, base_name)
             buttons = InlineKeyboardMarkup([[InlineKeyboardButton("More Info", url=movie_doc.get("imdb_url", "https://t.me/WOLVERIN_P" ))]])
+            
+            msg = None
+            is_photo = False
 
+            # Check for poster URL and LINK_PREVIEW setting
             if movie_doc.get("poster_url") and not LINK_PREVIEW:
                 resized_poster = await fetch_image(movie_doc["poster_url"], size=(2560, 1440) if LANDSCAPE_POSTER and TMDB_POSTER and not error_tmdb else (853, 1280))
-                msg = await bot.send_photo(
-                    chat_id=MOVIE_UPDATE_CHANNEL,
-                    photo=resized_poster,
-                    caption=text,
-                    reply_markup=buttons,
-                    parse_mode=enums.ParseMode.HTML
-                )
-                is_photo = True
-            else:
+                
+                # YAHAN PAR CHECK ADD KIYA GAYA HAI
+                if resized_poster:
+                    try:
+                        msg = await bot.send_photo(
+                            chat_id=MOVIE_UPDATE_CHANNEL,
+                            photo=resized_poster,
+                            caption=text,
+                            reply_markup=buttons,
+                            parse_mode=enums.ParseMode.HTML
+                        )
+                        is_photo = True
+                    except Exception as e:
+                        logger.warning(f"Could not send photo, falling back to text message. Error: {e}")
+                        msg = None # Reset msg if sending photo fails
+                
+            # Agar photo nahi bheji gayi (ya fail ho gayi), to text message bhejo
+            if not msg:
                 send_params = {
                     "chat_id": MOVIE_UPDATE_CHANNEL,
                     "text": text,
                     "reply_markup": buttons,
-                    "parse_mode": enums.ParseMode.HTML
+                    "parse_mode": enums.ParseMode.HTML,
+                    "disable_web_page_preview": not LINK_PREVIEW
                 }
                 if movie_doc.get("poster_url") and LINK_PREVIEW:
                     send_params["invert_media"] = ABOVE_PREVIEW
+                
                 msg = await bot.send_message(**send_params)
                 is_photo = False
 
-            await db.movie_updates.update_one(
-                {"_id": base_name},
-                {"$set": {"message_id": msg.id, "is_photo": is_photo}}
-            )
+            # Agar message safalta se bhej diya gaya hai to hi update karo
+            if msg:
+                await db.movie_updates.update_one(
+                    {"_id": base_name},
+                    {"$set": {"message_id": msg.id, "is_photo": is_photo}}
+                )
             return msg
         except FloodWait as e:
             wait_time = e.value + 2
@@ -373,6 +389,7 @@ async def send_movie_update(bot, base_name):
             logger.error(f"Failed to send movie update: {e}")
             break
     return None
+
 
 async def update_movie_message(bot, base_name):
     try:
