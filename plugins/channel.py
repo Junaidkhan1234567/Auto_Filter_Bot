@@ -335,6 +335,9 @@ async def send_movie_update(bot, base_name):
             if not movie_doc:
                 return None
 
+             # YAHAN PAR LINE ADD KARNI HAI
+            text = generate_movie_message(movie_doc, base_name)
+            buttons = InlineKeyboardMarkup([[InlineKeyboardButton("More Info", url=movie_doc.get("imdb_url", "https://t.me/WOLVERIN_P" ))]])
 
             if movie_doc.get("poster_url") and not LINK_PREVIEW:
                 resized_poster = await fetch_image(movie_doc["poster_url"], size=(2560, 1440) if LANDSCAPE_POSTER and TMDB_POSTER and not error_tmdb else (853, 1280))
@@ -376,6 +379,9 @@ async def update_movie_message(bot, base_name):
         movie_doc = await db.movie_updates.find_one({"_id": base_name})
         if not movie_doc:
             return
+
+        text = generate_movie_message(movie_doc, base_name)
+        buttons = InlineKeyboardMarkup([[InlineKeyboardButton("More Info", url=movie_doc.get("imdb_url", "https://t.me/WOLVERIN_P" ))]])
 
     
 
