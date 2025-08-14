@@ -444,6 +444,25 @@ async def update_movie_message(bot, base_name):
         logger.error(f"Failed to update movie message: {e}")
 
 def generate_movie_message(movie_doc, base_name):
+    def extract_resolutions_from_text(text: str):
+        if not text:
+            return []
+        matches = re.findall(r"\b(?:\d{3,4}p|4k)\b", text, flags=re.IGNORECASE)
+        normalized = []
+        for m in matches:
+            ml = m.lower()
+            if ml == "4k":
+                normalized.append("4K")
+            else:
+                normalized.append(ml)
+        seen = set()
+        unique = []
+        for q in normalized:
+            if q not in seen:
+                seen.add(q)
+                unique.append(q)
+        return unique
+
     quality_files = {}
     all_languages = set()
     all_tags = set()
@@ -452,12 +471,12 @@ def generate_movie_message(movie_doc, base_name):
     for file in movie_doc["files"]:
         file_qualities = []
         if file.get("quality") and file["quality"] != "N/A":
-            file_qualities = [q.strip() for q in file["quality"].split(",") if q.strip()]
-        
+            file_qualities = extract_resolutions_from_text(file["quality"]) or []
         if not file_qualities:
-            filename_qualities = QUALITY_PATTERN.findall(file["filename"])
-            file_qualities = filename_qualities if filename_qualities else ["Unknown"]
-        
+            file_qualities = extract_resolutions_from_text(file["filename"]) or []
+        if not file_qualities:
+            continue
+
         for quality in file_qualities:
             if quality not in quality_files:
                 quality_files[quality] = []
@@ -496,24 +515,20 @@ def generate_movie_message(movie_doc, base_name):
     caption_lines.append("🚀 Telegram Files ✨")
     caption_lines.append("")
     
-    # CHANGE 2: File link format updated
-    for quality in sorted(quality_files.keys(), key=lambda x: (
-        0 if 'hevc' in x.lower() else 1,
-        -int(re.search(r'(\d+)p', x.lower()).group(1)) if re.search(r'(\d+)p', x.lower()) else 999
-    )):
+    # Only show resolution labels; clicking delivers the file
+    def _sort_key(x: str):
+        xl = x.lower()
+        if xl == '4k':
+            return 0
+        m = re.search(r'(\d+)p', xl)
+        return -int(m.group(1)) if m else -1
+
+    for quality in sorted(quality_files.keys(), key=_sort_key):
         files_for_quality = quality_files[quality]
         
         for file_info in files_for_quality:
-            file_size_str = get_file_size_mb(file_info['file_size'])
-            
-            # The corrected link format
-            file_link = f'<a href="https://telegram.me/{temp.U_NAME}?start=files_{file_info["file_id"]}">{file_size_str}</a>'
-            
-            quality_display = quality.upper( ) if quality.lower() != "unknown" else "HD"
-            if "hevc" in quality.lower():
-                quality_display = quality_display.replace("HEVC","").strip() + " HEVC"
-            
-            caption_lines.append(f"📦 {quality_display} : {file_link}")
+            file_link = f'<a href="https://telegram.me/{temp.U_NAME}?start=file_{MOVIE_UPDATE_CHANNEL}_{file_info["file_id"]}">{quality.upper()}</a>'
+            caption_lines.append(f"📦 {file_link}")
             caption_lines.append("")
     
     if episodes_by_season:
