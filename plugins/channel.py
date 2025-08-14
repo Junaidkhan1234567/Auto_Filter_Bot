@@ -8,7 +8,7 @@ from database.users_chats_db import db
 from pyrogram import Client, filters, enums
 from info import CHANNELS, MOVIE_UPDATE_CHANNEL, LINK_PREVIEW, ABOVE_PREVIEW, BAD_WORDS, LANDSCAPE_POSTER, TMDB_POSTER
 from Script import script
-from database.ia_filterdb import save_file, get_file_details, unpack_new_file_id
+from database.ia_filterdb import save_file, unpack_new_file_id
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp
 from pymongo.errors import PyMongoError, DuplicateKeyError
@@ -504,7 +504,7 @@ def generate_movie_message(movie_doc, base_name):
     content_type = "SERIES" if "#SERIES" in all_tags else "MOVIE"
     
     caption_lines = []
-    caption_lines.append("📫 𝖭𝖤𝖶 𝖥𝖨𝖫𝖤 𝖠𝖣𝖣𝖤𝖣 ✅")
+    caption_lines.append("<blockquote>📫 𝖭𝖤𝖶 𝖥𝖨𝖫𝖤 𝖠𝖣𝖣𝖤𝖣 ✅</blockquote>")
     caption_lines.append("")
     caption_lines.append(f"🚧  Title : {base_name}")
     
@@ -512,24 +512,45 @@ def generate_movie_message(movie_doc, base_name):
     caption_lines.append(f"🎧 𝖠𝗎𝖽𝗂𝗈 : {language_str}")
     
     caption_lines.append(f"🔖 Type : {content_type}")
-    caption_lines.append("🚀 Telegram Files ✨")
+    caption_lines.append("<blockquote>🚀 Telegram Files ✨</blockquote>")
     caption_lines.append("")
     
-    # Only show resolution labels; clicking delivers the file
-    def _sort_key(x: str):
-        xl = x.lower()
-        if xl == '4k':
-            return 0
-        m = re.search(r'(\d+)p', xl)
+    # Group by resolution and HEVC label
+    grouped_by_label = {}
+    for quality, files_for_quality in quality_files.items():
+        # Determine HEVC for each file and bucket into label-specific groups
+        for fi in files_for_quality:
+            is_hevc = False
+            fname_lower = fi['filename'].lower()
+            if 'hevc' in fname_lower:
+                is_hevc = True
+            # Build label like '720p' or '720p HEVC'
+            base_label = quality.upper()
+            label = f"{base_label} HEVC" if is_hevc else base_label
+            if label not in grouped_by_label:
+                grouped_by_label[label] = []
+            grouped_by_label[label].append(fi)
+
+    def _sort_group_key(label: str):
+        ll = label.lower()
+        if '4k' in ll:
+            return -4000
+        m = re.search(r'(\d+)p', ll)
         return -int(m.group(1)) if m else -1
 
-    for quality in sorted(quality_files.keys(), key=_sort_key):
-        files_for_quality = quality_files[quality]
-        
-        for file_info in files_for_quality:
-            file_link = f'<a href="https://telegram.me/{temp.U_NAME}?start=file_{MOVIE_UPDATE_CHANNEL}_{file_info["file_id"]}">{quality.upper()}</a>'
-            caption_lines.append(f"📦 {file_link}")
-            caption_lines.append("")
+    for label in sorted(grouped_by_label.keys(), key=_sort_group_key):
+        files_for_label = grouped_by_label[label]
+        if not files_for_label:
+            continue
+        # Sort by size desc so larger files first
+        files_for_label.sort(key=lambda x: x.get('file_size', 0), reverse=True)
+        size_links = []
+        for file_info in files_for_label:
+            size_str = get_file_size_mb(file_info.get('file_size', 0))
+            link = f'<a href="https://telegram.me/{temp.U_NAME}?start=file_{MOVIE_UPDATE_CHANNEL}_{file_info["file_id"]}">{size_str}</a>'
+            size_links.append(link)
+        caption_lines.append(f"📦 {label} : {' | '.join(size_links)}")
+        caption_lines.append("")
     
     if episodes_by_season:
         caption_lines.append("📺 Episodes Available:")
@@ -564,7 +585,7 @@ def generate_movie_message(movie_doc, base_name):
             caption_lines.append(f"Season {int(season)}: Episodes {', '.join(all_ep_parts)}")
         caption_lines.append("")
     
-    caption_lines.append("〽️ Powered by @WOLVERIN_P")
+    caption_lines.append("<blockquote>〽️ Powered by @WOLVERIN_P</blockquote>")
     
     text = "\n".join(caption_lines)
     
