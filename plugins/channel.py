@@ -8,7 +8,7 @@ from database.users_chats_db import db
 from pyrogram import Client, filters, enums
 from info import CHANNELS, MOVIE_UPDATE_CHANNEL, LINK_PREVIEW, ABOVE_PREVIEW, BAD_WORDS, LANDSCAPE_POSTER, TMDB_POSTER
 from Script import script
-from database.ia_filterdb import save_file, get_file_details
+from database.ia_filterdb import save_file, get_file_details, unpack_new_file_id
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp
 from pymongo.errors import PyMongoError, DuplicateKeyError
@@ -222,10 +222,7 @@ async def media_handler(bot, message):
 
     media.file_type = next(ft for ft in ("document", "video", "audio") if hasattr(message, ft))
     media.caption = message.caption or ""
-    # We use the file_unique_id to get the file_id from the DB
-    file_id, file_ref = await get_file_details(media.file_unique_id)
-    media.file_id = file_id
-    media.file_ref = file_ref
+    # Keep original Telegram file_id for saving; DB file_id will be derived in save_file
     
     success, info = await save_file(media)
     if not success:
@@ -259,8 +256,11 @@ async def _process_with_lock(bot, filename, caption, media_info, base_name, proc
     global error_tmdb
     error_tmdb=False
 
-    # Extract file_id and file_size from media object
-    file_id = media.file_id if hasattr(media, 'file_id') else 'unknown_id'
+    # Extract DB file_id and file_size
+    try:
+        file_id, _ = unpack_new_file_id(media.file_id)
+    except Exception:
+        file_id = 'unknown_id'
     file_size = media.file_size if hasattr(media, 'file_size') else 0
 
     file_data = {
