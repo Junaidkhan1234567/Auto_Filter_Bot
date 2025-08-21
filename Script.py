@@ -1,13 +1,13 @@
 class script(object):
     START_TXT = """<b>ʜᴇʏ {}, {}</b>
 
-<b>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>, 🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</b>
+<b>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>\n🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</b>
 """
 
 
     GSTART_TXT = """<b>ʜᴇʏ {},</b>
 
-<b>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>, 🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</b>"""
+<b>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>\n🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</b>"""
 
     
     HELP_TXT = """<b>
