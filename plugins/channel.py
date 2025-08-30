@@ -525,7 +525,7 @@ def generate_movie_message(movie_doc, base_name):
             if 'hevc' in fname_lower:
                 is_hevc = True
             # Build label like '720p' or '720p HEVC'
-            base_label = quality.upper()
+            base_label = quality.lower()
             label = f"{base_label} HEVC" if is_hevc else base_label
             if label not in grouped_by_label:
                 grouped_by_label[label] = []
