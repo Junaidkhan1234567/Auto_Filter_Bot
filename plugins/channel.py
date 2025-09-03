@@ -397,6 +397,12 @@ async def update_movie_message(bot, base_name):
             return
 
         text, buttons = generate_movie_message(movie_doc, base_name)
+        buttons = InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                'ɢᴇᴛ ғɪʟᴇs',
+                url=f"https://t.me/{temp.U_NAME}?start=getfile-{base_name.replace(' ', '-')}"
+            )
+        ]])
 
         message_id = movie_doc.get("message_id")
         is_photo = movie_doc.get("is_photo", False)
