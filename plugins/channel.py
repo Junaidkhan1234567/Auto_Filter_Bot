@@ -400,7 +400,7 @@ async def update_movie_message(bot, base_name):
         buttons = InlineKeyboardMarkup([[
             InlineKeyboardButton(
                 '🗨️ Rᴇǫᴜᴇsᴛ Mᴏʀᴇ Mᴏᴠɪᴇs',
-                url=f"https://t.me/thinkfilmy(' ', '-')}"
+                url=f"https://t.me/{temp.U_NAME}?start=thinkfilmy-{base_name.replace(' ', '-')}"
             )
         ]])
 
