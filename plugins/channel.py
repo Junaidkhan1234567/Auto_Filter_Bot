@@ -396,8 +396,12 @@ async def update_movie_message(bot, ):
         if not movie_doc:
             return
 
-        text, buttons = generate_movie_message(movie_doc, base_name)
-        buttons = [[InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url='https://t.me/thinkfilmy')]]
+        text, buttons = generate_movie_message(movie_doc, InlineKeyboardMarkup)
+        button = InlineKeyboardMarkup(
+    [
+        [InlineKeyboardButton("Join Channel", url="https://t.me/thinkfilmy")]
+    ]
+)
 
         message_id = movie_doc.get("message_id")
         is_photo = movie_doc.get("is_photo", False)
