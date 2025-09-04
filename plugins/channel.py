@@ -390,18 +390,14 @@ async def send_movie_update(bot, base_name):
     return None
 
 
-async def update_movie_message(bot, base_name):
+async def update_movie_message(bot, ):
     try:
-        movie_doc = await db.movie_updates.find_one({"_id": base_name})
+        movie_doc = await db.movie_updates.find_one({"_id": InlineKeyboard})
         if not movie_doc:
             return
 
         text, buttons = generate_movie_message(movie_doc, base_name)
-        buttons = InlineKeyboardMarkup([[
-            InlineKeyboardButton
-                '🗨️ Rᴇǫᴜᴇsᴛ Mᴏʀᴇ Mᴏᴠɪᴇs',
-                url="https://t.me/thinkfilmy
-        ]])
+        buttons = [[InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url='https://t.me/thinkfilmy']])
 
         message_id = movie_doc.get("message_id")
         is_photo = movie_doc.get("is_photo", False)
