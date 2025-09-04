@@ -401,7 +401,8 @@ async def update_movie_message(bot, base_name):
             InlineKeyboardButton(
                 '🗨️ Rᴇǫᴜᴇsᴛ Mᴏʀᴇ Mᴏᴠɪᴇs',
                 url=f"https://t.me/{temp.U_NAME}?start=thinkfilmy-{base_name.replace(' ', '-')}"
-            )
+            ),(
+            InlineKeyboardButton('🔍 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url='https://t.me/+AoC-3ybhhGdiYjE1')
         ]])
 
         message_id = movie_doc.get("message_id")
