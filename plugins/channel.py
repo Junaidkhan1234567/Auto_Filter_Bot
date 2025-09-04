@@ -340,7 +340,8 @@ async def send_movie_update(bot, base_name):
             if not movie_doc:
                 return None
 
-            text, buttons = generate_movie_message(movie_doc, base_name)
+            text, buttons = generate_movie_message(movie_doc, base_name):
+          
             msg = None
             is_photo = False
 
@@ -395,7 +396,8 @@ async def update_movie_message(bot, ):
         if not movie_doc:
             return
 
-        text, buttons = generate_movie_message(movie_doc, base_name)
+        text, buttons = generate_movie_message(movie_doc, base_name):
+      
         message_id = movie_doc.get("message_id")
         is_photo = movie_doc.get("is_photo", False)
 
