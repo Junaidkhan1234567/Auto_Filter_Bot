@@ -398,10 +398,10 @@ async def update_movie_message(bot, base_name):
 
         text, buttons = generate_movie_message(movie_doc, base_name)
         buttons = InlineKeyboardMarkup([[
-            InlineKeyboardButton(
+            InlineKeyboardButton
                 '🗨️ Rᴇǫᴜᴇsᴛ Mᴏʀᴇ Mᴏᴠɪᴇs',
-                url=f"https://t.me/{temp.U_NAME}?start=thinkfilmy-{base_name.replace(' ', '-')}"
-            ),(
+                url=f"https://t.me/{temp.U_NAME}?start=thinkfilmy-{base_name.replace(' ', '-')},
+            ],[
             InlineKeyboardButton('🔍 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url='https://t.me/+AoC-3ybhhGdiYjE1')
         ]])
 
