@@ -398,7 +398,7 @@ async def send_movie_update(bot, base_name):
 
 async def update_movie_message(bot, ):
     try:
-        movie_doc = await db.movie_updates.find_one({"_id": InlineKeyboard})
+        movie_doc = await db.movie_updates.find_one({"_id": base_name})
         if not movie_doc:
             return
 
