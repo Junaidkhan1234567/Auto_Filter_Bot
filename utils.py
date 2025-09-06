@@ -790,7 +790,7 @@ async def get_cap(settings, remaining_seconds, files, query, total_results, sear
                         )
                 else:
                     cap = (
-                        f"📝 ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {query.from_user.mention}\n"
+                        f"👤 ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {query.from_user.mention}\n"
                     )
                     cap += "\n\n🧾 <u>Your Requested Files Are Here</u> 👇 👇\n\n</b>"
                     for idx, file in enumerate(files, start=offset + 1):
@@ -805,7 +805,7 @@ async def get_cap(settings, remaining_seconds, files, query, total_results, sear
 
         else:
             cap = (
-                f"📝 ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {query.from_user.mention}\n"
+                f"👤 ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ : {query.from_user.mention}\n"
             )
             cap += "\n\n🧾 <u>Your Requested Files Are Here</u> 👇\n\n</b>"
             for idx, file in enumerate(files, start=offset):
