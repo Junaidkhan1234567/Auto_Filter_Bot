@@ -390,7 +390,7 @@ async def send_movie_update(bot, base_name):
     return None
 
 
-async def update_movie_message(bot, ):
+async def update_movie_message(bot, base_name):
     try:
         movie_doc = await db.movie_updates.find_one({"_id": base_name})
         if not movie_doc:
@@ -525,7 +525,7 @@ def generate_movie_message(movie_doc, base_name):
             if 'hevc' in fname_lower:
                 is_hevc = True
             # Build label like '720p' or '720p HEVC'
-            base_label = quality.lower()
+            base_label = quality.upper()
             label = f"{base_label} HEVC" if is_hevc else base_label
             if label not in grouped_by_label:
                 grouped_by_label[label] = []
