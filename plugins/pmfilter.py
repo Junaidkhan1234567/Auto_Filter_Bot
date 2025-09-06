@@ -845,16 +845,24 @@ async def cb_handler(client: Client, query: CallbackQuery):
         clicked = query.from_user.id
         ident, key = query.data.split("#")
         settings = await get_settings(query.message.chat.id)
-        try:
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{query.message.chat.id}_{key}")
-            return
-        except UserIsBlocked:
-            await query.answer('Uɴʙʟᴏᴄᴋ ᴛʜᴇ ʙᴏᴛ ᴍᴀʜɴ !', show_alert=True)
-        except PeerIdInvalid:
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles3_{key}")
-        except Exception as e:
-            logger.exception(e)
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles4_{key}")
+        
+        # Check if user has premium access
+        has_premium = await db.has_premium_access(clicked)
+        
+        if has_premium:
+            try:
+                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{query.message.chat.id}_{key}")
+                return
+            except UserIsBlocked:
+                await query.answer('Uɴʙʟᴏᴄᴋ ᴛʜᴇ ʙᴏᴛ ᴍᴀʜɴ !', show_alert=True)
+            except PeerIdInvalid:
+                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles3_{key}")
+            except Exception as e:
+                logger.exception(e)
+                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles4_{key}")
+        else:
+            # Show premium popup for non-premium users
+            await query.answer("THIs FEATURE Is ONLY AVAILABLE FOR PREMIUM UsERs. UPGRADE TO ACCEss! ⚡", show_alert=True)
 
     elif query.data.startswith("del"):
         ident, file_id = query.data.split("#")

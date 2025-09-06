@@ -589,7 +589,10 @@ def generate_movie_message(movie_doc, base_name):
     
     text = "\n".join(caption_lines)
     
-    # CHANGE 1: More Info button removed. Returning None for buttons.
-    buttons = None
+    # Add Movie Search Group button
+    buttons = [
+        [InlineKeyboardButton("🔰𝐌𝐨𝐯𝐢𝐞 𝐒𝐞𝐚𝐫𝐜𝐡 𝐆𝐫𝐨𝐮𝐩🔰", url="https://t.me/thinkfilmy")]
+    ]
     
-    return text, buttons
+    return text, InlineKeyboardMarkup(buttons)
+    
