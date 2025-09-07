@@ -1,8 +1,8 @@
 class script(object):
-    START_TXT = """<b>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>\n🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</b>"""
+    START_TXT = """<b><u>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>\n🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</u></b>"""
 
 
-    GSTART_TXT = """<b>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>\n🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</b>"""
+    GSTART_TXT = """<b><u>🤖 ɪ ᴀᴍ <a href=https://t.me/{}>{}</a>\n🍿 Unlimited Movies\n🎬 Instant File Access\n🆓 100% Free, Always\n🔮 By @WOLVERIN_P 🌿</u></b>"""
 
     
     HELP_TXT = """<b>
