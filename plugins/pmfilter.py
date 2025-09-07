@@ -1537,11 +1537,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
                      InlineKeyboardButton('ᴜᴘɢʀᴀᴅᴇ 🎟', callback_data="premium_info"),
                 ]]
         reply_markup = InlineKeyboardMarkup(button)
-        await client.edit_message_media(
+            await client.edit_message_media(
                 query.message.chat.id, 
                 query.message.id, 
                 InputMediaPhoto(random.choice(PICS))
-            )    
+            ) 
+        except Exception as e:    
+            pass
             await query.message.edit_text(
             text=script.START_TXT.format(query.from_user.mention, gtxt, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
