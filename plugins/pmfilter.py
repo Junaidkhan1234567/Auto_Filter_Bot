@@ -18,7 +18,6 @@ import asyncio
 import re
 import math
 import random
-import pytz
 from datetime import datetime, timedelta
 lock = asyncio.Lock()
 
