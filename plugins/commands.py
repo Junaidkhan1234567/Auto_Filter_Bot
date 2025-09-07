@@ -24,7 +24,6 @@ from utils import get_settings, save_group_settings, is_subscribed, is_req_subsc
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
-TIMEZONE = "Asia/Kolkata"
 BATCH_FILES = {}
 
 @Client.on_message(filters.command("start") & filters.incoming)
