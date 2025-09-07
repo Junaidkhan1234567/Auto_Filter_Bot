@@ -106,7 +106,7 @@ async def start(client, message):
                     InlineKeyboardButton('ᴛᴏᴘ sᴇᴀʀᴄʜɪɴɢ ⭐', callback_data="topsearch"),
                     InlineKeyboardButton('ᴜᴘɢʀᴀᴅᴇ 🎟', callback_data="premium_info"),
                 ]]
-        reply_markup = InlineKeyboardMarkup(START_TXT)
+        reply_markup = InlineKeyboardMarkup(button)
         m=await message.reply_text("⏳")
         await asyncio.sleep(0.4)
         await m.delete()        
@@ -115,7 +115,7 @@ async def start(client, message):
             caption=script.START_TXT.format(message.from_user.mention, gtxt, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
-        )
+    
         return
 
     if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
@@ -137,7 +137,7 @@ async def start(client, message):
             caption=script.START_TXT.format(message.from_user.mention, gtxt, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
-        )
+        
         return
     if message.command[1].startswith("reff_"):
         try:
