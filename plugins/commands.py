@@ -106,7 +106,7 @@ async def start(client, message):
                     InlineKeyboardButton('ᴛᴏᴘ sᴇᴀʀᴄʜɪɴɢ ⭐', callback_data="topsearch"),
                     InlineKeyboardButton('ᴜᴘɢʀᴀᴅᴇ 🎟', callback_data="premium_info"),
                 ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
+        reply_markup = InlineKeyboardMarkup(START_TXT)
         m=await message.reply_text("⏳")
         await asyncio.sleep(0.4)
         await m.delete()        
@@ -128,7 +128,7 @@ async def start(client, message):
                     InlineKeyboardButton('ᴛᴏᴘ sᴇᴀʀᴄʜɪɴɢ ⭐', callback_data="topsearch"),
                     InlineKeyboardButton('ᴜᴘɢʀᴀᴅᴇ 🎟', callback_data="premium_info"),
                 ]]
-        reply_markup = InlineKeyboardMarkup(buttons)
+        reply_markup = InlineKeyboardMarkup(START_TXT)
         m=await message.reply_text("⏳")
         await asyncio.sleep(0.4)
         await m.delete()        
