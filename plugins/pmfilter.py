@@ -211,7 +211,7 @@ async def next_page(bot, query):
         btn.insert(0, [
             InlineKeyboardButton(
                 "⚜️ 𝐑𝐞𝐦𝐨𝐯𝐞 𝐚𝐝𝐬 ⚜️", url=f"https://t.me/{temp.U_NAME}?start=premium"),
-            InlineKeyboardButton("Sᴇɴᴅ Aʟʟ", callback_data=f"sendfiles#{key}")
+            InlineKeyboardButton("Sᴇɴᴅ Aʟʟ", callback_data=f"sendfiles#{key}")        
         ])
     try:
         if settings['max_btn']:
