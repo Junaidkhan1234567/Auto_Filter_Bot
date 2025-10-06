@@ -338,42 +338,28 @@ async def advantage_spoll_choker(bot, query):
         await k.delete()
 
 # Qualities
-@Client.on_callback_query(filters.regex(r"^qualities#"))
-async def qualities_cb_handler(client: Client, query: CallbackQuery):
+@Client.on_callback_query(filters.regex(r"^fq#"))
+async def file_quality_callback(client, query):
     try:
-        if int(query.from_user.id) not in [query.message.reply_to_message.from_user.id, 0]:
-            return await query.answer(
-                f"⚠️ ʜᴇʟʟᴏ {query.from_user.first_name},\n"
-                f"ᴛʜɪꜱ ɪꜱ ɴᴏᴛ ʏᴏᴜʀ ᴍᴏᴠɪᴇ ʀᴇǫᴜᴇꜱᴛ,\nʀᴇǫᴜᴇꜱᴛ ʏᴏᴜʀ'ꜱ...",
-                show_alert=True,
-            )
-    except:
-        pass
+        _, quality, key = query.data.split("#")
+        user_id = query.from_user.id
 
-    _, key = query.data.split("#")
-    search = FRESH.get(key)
-    search = search.replace(' ', '_')
+        # Low qualities allowed for everyone
+        free_qualities = ["144p", "360p", "480p"]
 
-    btn = []
-    for i in range(0, len(QUALITIES), 2):
-        q1 = QUALITIES[i]
-        row = [InlineKeyboardButton(
-            text=q1, callback_data=f"fq#{q1.lower()}#{key}")]
-        if i + 1 < len(QUALITIES):
-            q2 = QUALITIES[i + 1]
-            row.append(InlineKeyboardButton(
-                text=q2, callback_data=f"fq#{q2.lower()}#{key}"))
-        btn.append(row)
+        # Agar high quality select ki gayi aur user premium nahi hai
+        if quality not in free_qualities:
+            is_premium = await db.has_premium_access(user_id)
+            if not is_premium:
+                return await query.answer("This quality is for premium users only", show_alert=True)
 
-    btn.insert(0, [
-        InlineKeyboardButton(text="⇊ ꜱᴇʟᴇᴄᴛ ǫᴜᴀʟɪᴛʏ ⇊", callback_data="ident")
-    ])
-    btn.append([
-        InlineKeyboardButton(text="↭ ʙᴀᴄᴋ ᴛᴏ ꜰɪʟᴇs ↭",
-                             callback_data=f"fq#homepage#{key}")
-    ])
+        # --- Yahan se normal download ya file send logic chalega ---
+        await query.answer(f"Selected quality: {quality}")
+        # (yahan apna file send ya result show logic likha hota hai)
 
-    await query.edit_message_reply_markup(InlineKeyboardMarkup(btn))
+    except Exception as e:
+        print(e)
+        await query.answer("Something went wrong!", show_alert=True)
 
 
 @Client.on_callback_query(filters.regex(r"^fq#"))
