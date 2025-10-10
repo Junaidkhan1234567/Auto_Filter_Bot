@@ -91,8 +91,8 @@ ABOVE_PREVIEW = bool(environ.get('ABOVE_PREVIEW', True)) # Shows link preview ab
 TMDB_API_KEY = environ.get('TMDB_API_KEY', '76329e89eebf32d35850e5bc016a7fda') # preffer to use your own tmdb API Key get it from https://www.themoviedb.org/settings/api
 TMDB_POSTER = bool(environ.get('TMDB_POSTER', True)) # Shows TMDB poster in notification msg
 LANDSCAPE_POSTER = bool(environ.get('LANDSCAPE_POSTER', True)) # Shows landscape poster in notification msg
-IS_FILE_LIMIT = False 
-FILES_LIMIT = 5          # files per day for free users
+IS_FILE_LIMIT = True 
+FILES_LIMIT = 10          # files per day for free users
 FILE_AUTO_DEL_TIMER = 86400   # 24h reset
 
 # ============================
@@ -161,7 +161,7 @@ EMOJI_MODE = bool(environ.get('EMOJI_MODE', False))  # Emoji status On (True) / 
 BUTTON_MODE = is_enabled((environ.get('BUTTON_MODE', "False")), False) # pm & Group button or link mode (True) / Off (False)
 STREAM_MODE = bool(environ.get('STREAM_MODE', True)) # Set Stream mode True or False
 PREMIUM_STREAM_MODE = bool(environ.get('PREMIUM_STREAM_MODE', True)) # Set Stream mode True or False only for premium users
-QUALITY_LIMIT = True 
+QUALITY_LIMIT = False 
 
 # ============================
 # Bot Configuration
