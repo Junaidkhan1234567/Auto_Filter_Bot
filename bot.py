@@ -15,7 +15,7 @@ from database.users_chats_db import db
 from info import *
 from utils import temp
 from Script import script
-from plugins import web_server, check_expired_premium, keep_alive
+from plugins import web_server, check_expired_premium, keep_alive, reset_file_limits_daily
 from dreamxbotz.Bot import dreamxbotz
 from dreamxbotz.util.keepalive import ping_server
 from dreamxbotz.Bot.clients import initialize_clients
@@ -80,11 +80,17 @@ async def dreamxbotz_start():
     now = datetime.now(tz)
     time = now.strftime("%H:%M:%S %p")
     await dreamxbotz.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(temp.B_LINK, today, time))
+    for admin_id in ADMINS:
+        try:
+            await dreamxbotz.send_message(chat_id=int(admin_id), text=f"🤖 {temp.B_NAME} Restarted Successfully ✅")
+        except Exception as e:
+            logging.warning(f"Couldn't send restart message to admin {admin_id}: {e}")
     app = web.AppRunner(await web_server())
     await app.setup()
     bind_address = "0.0.0.0"
     await web.TCPSite(app, bind_address, PORT).start()
     dreamxbotz.loop.create_task(keep_alive())
+    dreamxbotz.loop.create_task(reset_file_limits_daily())
     await idle()
     
 if __name__ == '__main__':
