@@ -362,23 +362,55 @@ async def start(client, message):
                         ]
                 else:
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-            
                 if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-                msg = await client.send_cached_media(
-                    chat_id=message.from_user.id,
-                    file_id=file_id,
-                    caption=f_caption,
-                    protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                    reply_markup=InlineKeyboardMarkup(btn)
-                )
+    is_premium = await db.has_premium_access(message.from_user.id)
+    if not is_premium:
+        count = await db.get_user_limit(message.from_user.id)
+        if count >= FILES_LIMIT:
+            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+        await db.increment_user_limit(message.from_user.id)
+        remaining = FILES_LIMIT - count - 1
+        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+
+        # --- Non-Premium: Show Promo Image + Buttons ---
+        image_url = "https://te.legra.ph/file/92f8f2e4bdbb9a8b8bdf7.jpg"  # 👈 apni image URL daalo
+        buttons = [
+            [
+                InlineKeyboardButton("📥 Download File", url="https://example.com/download"),
+                InlineKeyboardButton("⭐ Join Channel", url="https://t.me/yourchannel")
+            ]
+        ]
+        f_caption = (
+            f"📁 <b>{f_caption}</b>\n\n"
+            f"💬 <i>Enjoy fast downloads with DreamxBotz!</i>\n"
+            f"💰 <b>Tax Info:</b> All file links include applicable service tax."
+        )
+
+        # Send Image Before File
+        await client.send_photo(
+            chat_id=message.from_user.id,
+            photo=image_url,
+            caption=f_caption,
+            protect_content=settings.get('file_secure', PROTECT_CONTENT),
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    else:
+        # --- Premium: Short Caption only (No Image/Buttons) ---
+        f_caption = f"📁 <b>{f_caption}</b>\n\n✅ Premium Access Active! Enjoy Unlimited Downloads."
+else:
+    f_caption = f"📁 <b>{f_caption}</b>"
+
+# --- Send Main File (Common for All Users) ---
+msg = await client.send_cached_media(
+    chat_id=message.from_user.id,
+    file_id=file_id,
+    caption=f_caption,
+    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+    reply_markup=InlineKeyboardMarkup([
+        [InlineKeyboardButton("🆘 Support", url="https://t.me/your_support")]
+    ])
+)
                 filesarr.append(msg)
             k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
             await asyncio.sleep(DELETE_TIME)
@@ -416,19 +448,54 @@ async def start(client, message):
             
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
             if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-            msg = await client.send_cached_media(
-                chat_id=message.from_user.id,
-                file_id=file_id,
-                protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                reply_markup=InlineKeyboardMarkup(btn))
+    is_premium = await db.has_premium_access(message.from_user.id)
+    if not is_premium:
+        count = await db.get_user_limit(message.from_user.id)
+        if count >= FILES_LIMIT:
+            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+        await db.increment_user_limit(message.from_user.id)
+        remaining = FILES_LIMIT - count - 1
+        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+
+        # --- Non-Premium: Show Promo Image + Buttons ---
+        image_url = "https://te.legra.ph/file/92f8f2e4bdbb9a8b8bdf7.jpg"  # 👈 apni image URL daalo
+        buttons = [
+            [
+                InlineKeyboardButton("📥 Download File", url="https://example.com/download"),
+                InlineKeyboardButton("⭐ Join Channel", url="https://t.me/yourchannel")
+            ]
+        ]
+        f_caption = (
+            f"📁 <b>{f_caption}</b>\n\n"
+            f"💬 <i>Enjoy fast downloads with DreamxBotz!</i>\n"
+            f"💰 <b>Tax Info:</b> All file links include applicable service tax."
+        )
+
+        # Send Image Before File
+        await client.send_photo(
+            chat_id=message.from_user.id,
+            photo=image_url,
+            caption=f_caption,
+            protect_content=settings.get('file_secure', PROTECT_CONTENT),
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    else:
+        # --- Premium: Short Caption only (No Image/Buttons) ---
+        f_caption = f"📁 <b>{f_caption}</b>\n\n✅ Premium Access Active! Enjoy Unlimited Downloads."
+else:
+    f_caption = f"📁 <b>{f_caption}</b>"
+
+# --- Send Main File (Common for All Users) ---
+msg = await client.send_cached_media(
+    chat_id=message.from_user.id,
+    file_id=file_id,
+    caption=f_caption,
+    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+    reply_markup=InlineKeyboardMarkup([
+        [InlineKeyboardButton("🆘 Support", url="https://t.me/your_support")]
+    ])
+)
 
             filetype = msg.media
             file = getattr(msg, filetype.value)
