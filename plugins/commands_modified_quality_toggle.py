@@ -368,33 +368,7 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-    btn = [
-        [InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")],
-        [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
-    ]
-    reply_markup = InlineKeyboardMarkup(buttons)
-
-    warn_msg = await message.reply_photo(
-        photo="https://i.imgur.com/zU3M6kU.jpg",  # optional image
-        caption=(
-            f"⚠️ Hey {message.from_user.mention},\n\n"
-            f"Your <b>daily download limit</b> is over 😢\n\n"
-            f"Free users can only download <b>{FILES_LIMIT}</b> files per day.\n\n"
-            f"⏳ Try again tomorrow or upgrade to Premium for unlimited access!"
-        ),
-        reply_markup=reply_markup,
-        parse_mode=enums.ParseMode.HTML
-    )
-
-    await asyncio.sleep(30)
-    await warn_msg.delete()
-
-    try:
-        await message.delete()
-    except:
-        pass
-
-    return
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
@@ -446,33 +420,7 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-    btn = [
-        [InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")],
-        [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
-    ]
-    reply_markup = InlineKeyboardMarkup(buttons)
-
-    warn_msg = await message.reply_photo(
-        photo="https://i.imgur.com/zU3M6kU.jpg",  # optional image
-        caption=(
-            f"⚠️ Hey {message.from_user.mention},\n\n"
-            f"Your <b>daily download limit</b> is over 😢\n\n"
-            f"Free users can only download <b>{FILES_LIMIT}</b> files per day.\n\n"
-            f"⏳ Try again tomorrow or upgrade to Premium for unlimited access!"
-        ),
-        reply_markup=reply_markup,
-        parse_mode=enums.ParseMode.HTML
-    )
-
-    await asyncio.sleep(30)
-    await warn_msg.delete()
-
-    try:
-        await message.delete()
-    except:
-        pass
-
-    return
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
