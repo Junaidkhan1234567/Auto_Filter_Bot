@@ -368,7 +368,7 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-    buttons = [
+    btn = [
         [InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")],
         [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
     ]
@@ -446,7 +446,7 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-    buttons = [
+    btn = [
         [InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")],
         [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
     ]
