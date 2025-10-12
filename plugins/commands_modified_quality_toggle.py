@@ -368,16 +368,21 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-                msg = await client.send_cached_media(
-                    chat_id=message.from_user.id,
-                    file_id=file_id,
-                    caption=f_caption,
-                    protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                    reply_markup=InlineKeyboardMarkup(btn)
+                            if not any(q in (files1.file_name or "").lower() for q in FILE_LIMIT):
+                        buttons = [[
+                            InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")
+                        ],[
+                            InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)
+                        ]]
+                        reply_markup = InlineKeyboardMarkup(buttons)
+                        await message.reply_photo(
+                            photo="http://ibb.co/608JNcwR",
+                            caption=f"⚠️ Hey {message.from_user.mention},\n\n"
+                                    f"Ye file sirf <b>Premium Users</b> ke liye available hai.\n\n"
+                                    f"Free users ko sirf 360p & 480p quality milti hai ✅",
+                            reply_markup=reply_markup,
+                            parse_mode=enums.ParseMode.HTML
+                        )
                 )
                 filesarr.append(msg)
             k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
@@ -420,15 +425,21 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-            msg = await client.send_cached_media(
-                chat_id=message.from_user.id,
-                file_id=file_id,
-                protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                reply_markup=InlineKeyboardMarkup(btn))
+                            if not any(q in (files1.file_name or "").lower() for q in FILE_LIMIT):
+                        buttons = [[
+                            InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")
+                        ],[
+                            InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)
+                        ]]
+                        reply_markup = InlineKeyboardMarkup(buttons)
+                        await message.reply_photo(
+                            photo="http://ibb.co/608JNcwR",
+                            caption=f"⚠️ Hey {message.from_user.mention},\n\n"
+                                    f"Ye file sirf <b>Premium Users</b> ke liye available hai.\n\n"
+                                    f"Free users ko sirf 360p & 480p quality milti hai ✅",
+                            reply_markup=reply_markup,
+                            parse_mode=enums.ParseMode.HTML
+                        )
 
             filetype = msg.media
             file = getattr(msg, filetype.value)
