@@ -368,7 +368,6 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            if not any(q in (files1.file_name or "").lower() for q in FILE_LIMIT):
                         buttons = [[
                             InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")
                         ],[
@@ -425,7 +424,6 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            if not any(q in (files1.file_name or "").lower() for q in FILE_LIMIT):
                         buttons = [[
                             InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")
                         ],[
