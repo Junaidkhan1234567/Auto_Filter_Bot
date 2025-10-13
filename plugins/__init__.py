@@ -1,7 +1,8 @@
 from aiohttp import web
 from .route import routes
 from asyncio import sleep 
-from datetime import datetime
+from datetime import datetime,timedelta
+import pytz
 from database.users_chats_db import db
 from info import LOG_CHANNEL, URL, PREMIUM_LOGS
 import aiohttp
@@ -33,6 +34,20 @@ async def check_expired_premium(client):
                 print(e)
             await sleep(0.5)
         await sleep(1)
+
+async def reset_file_limits_daily():
+    tz = pytz.timezone('Asia/Kolkata')
+    while True:
+        now = datetime.now(tz)
+        target_time = time(23, 59)
+        target_datetime = tz.localize(datetime.combine(now.date(), target_time))
+        if now > target_datetime:
+            target_datetime += timedelta(days=1)
+        time_diff = (target_datetime - now).total_seconds()
+        await asyncio.sleep(time_diff)
+        silicondb.reset_all_file_limits()
+        print("Files count reset successfully")
+
 
 async def keep_alive():
     """Keep bot alive by sending periodic pings."""
