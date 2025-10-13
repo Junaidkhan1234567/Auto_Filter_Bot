@@ -1,6 +1,7 @@
 import motor.motor_asyncio
 from info import *
 import datetime
+import asyncio
 import pytz  
 from pymongo.errors import DuplicateKeyError
 
@@ -20,12 +21,6 @@ class Database:
         self.filename_col = self.db.filename
         self.movie_updates = self.db.movie_updates
         self.connection = self.db.connections
-
-    async def add_name(self, filename):
-        if await self.movie_updates.find_one({'_id': filename}):
-            return False
-        await self.movie_updates.insert_one({'_id': filename})
-        return True
 
     async def delete_all_msg(self):
         await self.movie_updates.delete_many({})
@@ -198,9 +193,6 @@ class Database:
     
     async def get_all_chats(self):
         return self.grp.find({})
-
-    async def get_db_size(self):
-        return (await self.db.command("dbstats"))['dataSize']
 
     async def get_user(self, user_id):
         user_data = await self.users.find_one({"id": user_id})
@@ -419,6 +411,54 @@ class Database:
 
     async def update_movie_update_status(self, bot_id, enable):
         await self.update_bot_setting(bot_id, 'MOVIE_UPDATE_NOTIFICATION', enable)
+
+    async def get_user_limit(self, user_id):
+        """Return current file count and reset if 24h passed."""
+        user = await self.get_user(user_id)
+        now = datetime.datetime.utcnow()
+
+        if not user:
+            # initialize record
+            data = {
+                "id": user_id,
+                "file_count": 0,
+                "last_reset": now
+            }
+            await self.update_user(data)
+            return 0
+
+        last_reset = user.get("last_reset", now)
+        # auto reset if 24 hours passed
+        if (now - last_reset).total_seconds() > FILE_AUTO_DEL_TIMER:
+            await self.update_user({
+                "id": user_id,
+                "file_count": 0,
+                "last_reset": now
+            })
+            return 0
+
+        return user.get("file_count", 0)
+
+    async def increment_user_limit(self, user_id):
+        """Increase user file usage count by 1."""
+        user = await self.get_user(user_id)
+        now = datetime.datetime.utcnow()
+        if not user:
+            user = {"id": user_id, "file_count": 1, "last_reset": now}
+        else:
+            count = user.get("file_count", 0) + 1
+            user.update({"file_count": count, "last_reset": user.get("last_reset", now)})
+        await self.update_user(user)
+
+    async def reset_user_limit(self, user_id=None):
+        """Reset limit for one or all users."""
+        now = datetime.datetime.utcnow()
+        if user_id:
+            await self.users.update_one({"id": user_id}, {"$set": {"file_count": 0, "last_reset": now}})
+            return 1
+        result = await self.users.update_many({}, {"$set": {"file_count": 0, "last_reset": now}})
+        return result.modified_count
+
      
 db = Database(DATABASE_URI, DATABASE_NAME)    
 db2 = Database(DATABASE_URI2, DATABASE_NAME)
