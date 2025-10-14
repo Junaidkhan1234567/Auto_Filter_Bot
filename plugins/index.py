@@ -6,6 +6,8 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait
 from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, ChatAdminRequired, UsernameInvalid, UsernameNotModified
 from info import ADMINS, INDEX_REQ_CHANNEL as LOG_CHANNEL
+from database.users_chats_db import db
+from plugins.channel import process_and_send_update
 from database.ia_filterdb import save_file
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import temp, get_readable_time
@@ -177,6 +179,7 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                     current += len(message_ids)
                     continue
                 save_tasks = []
+                pending_media = []
                 for message in messages:
                     current += 1
                     try:
@@ -196,18 +199,25 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                         media.file_type = message.media.value
                         media.caption = message.caption
                         save_tasks.append(save_file(media))
+                        pending_media.append(media)
 
                     except Exception:
                         errors += 1
                         continue
                 results = await asyncio.gather(*save_tasks, return_exceptions=True)
-                for result in results:
+                for media_obj, result in zip(pending_media, results):
                     if isinstance(result, Exception):
                         errors += 1
                     else:
                         ok, code = result
                         if ok:
                             total_files += 1
+                            # Trigger movie update flow for each newly saved file
+                            try:
+                                if await db.movie_update_status(bot.me.id):
+                                    await process_and_send_update(bot, media_obj.file_name, media_obj.caption or "", media_obj)
+                            except Exception:
+                                logger.exception("Error sending movie update from indexing")
                         elif code == 0:
                             duplicate += 1
                         elif code == 2:
