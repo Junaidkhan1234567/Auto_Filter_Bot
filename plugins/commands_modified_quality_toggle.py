@@ -368,6 +368,8 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
+                            await message.reply_photo(
+                photo="http://ibb.co/608JNcwR",
                             return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
@@ -420,6 +422,8 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
+                            await message.reply_photo(
+                photo="http://ibb.co/608JNcwR",
                             return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
@@ -522,6 +526,8 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
+                            await message.reply_photo(
+                photo="http://ibb.co/608JNcwR",
                             return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
