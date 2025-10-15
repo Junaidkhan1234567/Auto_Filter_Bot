@@ -368,7 +368,8 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-    btn = [[InlineKeyboardButton("💎 Buy Premium", callback_data="premium_info")]]
+    buttons = [[
+                            InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")]]
     reply_markup = InlineKeyboardMarkup(btn)
     alert = await message.reply_photo(
         photo="https://graph.org/file/your_image_link_here.jpg",  # Replace with your image link
@@ -440,7 +441,8 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-    btn = [[InlineKeyboardButton("💎 Buy Premium", callback_data="premium_info")]]
+    buttons = [[
+                            InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")]]
     reply_markup = InlineKeyboardMarkup(btn)
     alert = await message.reply_photo(
         photo="https://graph.org/file/your_image_link_here.jpg",  # Replace with your image link
@@ -562,7 +564,8 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-    btn = [[InlineKeyboardButton("💎 Buy Premium", callback_data="premium_info")]]
+    buttons = [[
+                            InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")]]
     reply_markup = InlineKeyboardMarkup(btn)
     alert = await message.reply_photo(
         photo="https://graph.org/file/your_image_link_here.jpg",  # Replace with your image link
