@@ -6,7 +6,7 @@ class script(object):
    
     HELP_TXT = """<b>
     
-📮 Help Center: our admin is available to help you with any issues.
+🎭 Help Center: our admin is available to help you with any issues.
 
 🕘 Working Hours: 9:00 AM – 6:00 PM
 
