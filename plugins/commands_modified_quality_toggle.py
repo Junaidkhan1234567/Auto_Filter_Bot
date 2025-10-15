@@ -361,30 +361,37 @@ async def start(client, message):
                             [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
                         ]
                 else:
-                    btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-            
-                if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            return await message.reply_photo(
-                                photo=random.choice(PICS),
-                                caption=(
-                                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
-                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
-                                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
-                                ),
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-                msg = await client.send_cached_media(
-                    chat_id=message.from_user.id,
-                    file_id=file_id,
-                    caption=f_caption,
-                    protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                    reply_markup=InlineKeyboardMarkup(btn)
-                )
+                    btn = [
+    [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+    [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]
+]
+else:
+    btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
+
+if IS_FILE_LIMIT:
+    is_premium = await db.has_premium_access(message.from_user.id)
+    if not is_premium:
+        count = await db.get_user_limit(message.from_user.id)
+        if count >= FILES_LIMIT:
+            return await message.reply_photo(
+                photo=random.choice(PICS),
+                caption=(
+                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+                ),
+            )  # ✅ यह bracket add किया गया है
+        await db.increment_user_limit(message.from_user.id)
+        remaining = FILES_LIMIT - count - 1
+        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+
+msg = await client.send_cached_media(
+    chat_id=message.from_user.id,
+    file_id=file_id,
+    caption=f_caption,
+    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+    reply_markup=InlineKeyboardMarkup(btn)
+)
                 filesarr.append(msg)
             k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
             await asyncio.sleep(DELETE_TIME)
@@ -420,27 +427,37 @@ async def start(client, message):
                     ]
             else:
             
-                btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            return await message.reply_photo(
-                                photo=random.choice(PICS),
-                                caption=(
-                                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
-                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
-                                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
-                                ),
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-            msg = await client.send_cached_media(
-                chat_id=message.from_user.id,
-                file_id=file_id,
-                protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                reply_markup=InlineKeyboardMarkup(btn))
+                btn = [
+    [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+    [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]
+]
+else:
+    btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
+
+if IS_FILE_LIMIT:
+    is_premium = await db.has_premium_access(message.from_user.id)
+    if not is_premium:
+        count = await db.get_user_limit(message.from_user.id)
+        if count >= FILES_LIMIT:
+            return await message.reply_photo(
+                photo=random.choice(PICS),
+                caption=(
+                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+                ),
+            )  # ✅ यह bracket add किया गया है
+        await db.increment_user_limit(message.from_user.id)
+        remaining = FILES_LIMIT - count - 1
+        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+
+msg = await client.send_cached_media(
+    chat_id=message.from_user.id,
+    file_id=file_id,
+    caption=f_caption,
+    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+    reply_markup=InlineKeyboardMarkup(btn)
+)
 
             filetype = msg.media
             file = getattr(msg, filetype.value)
@@ -528,35 +545,37 @@ async def start(client, message):
                 [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
             ]
     else:
-        btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-    if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            return await message.reply_photo(
+        btn = [
+    [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+    [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]
+]
+else:
+    btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
 
-                                photo=random.choice(PICS),
+if IS_FILE_LIMIT:
+    is_premium = await db.has_premium_access(message.from_user.id)
+    if not is_premium:
+        count = await db.get_user_limit(message.from_user.id)
+        if count >= FILES_LIMIT:
+            return await message.reply_photo(
+                photo=random.choice(PICS),
+                caption=(
+                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+                ),
+            )  # ✅ यह bracket add किया गया है
+        await db.increment_user_limit(message.from_user.id)
+        remaining = FILES_LIMIT - count - 1
+        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
 
-                                caption=(
-
-                                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
-
-                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
-
-                                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
-
-                                ), 
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-    msg = await client.send_cached_media(
-        chat_id=message.from_user.id,
-        file_id=file_id,
-        caption=f_caption,
-        protect_content=settings.get('file_secure', PROTECT_CONTENT),
-        reply_markup=InlineKeyboardMarkup(btn)
-    )
+msg = await client.send_cached_media(
+    chat_id=message.from_user.id,
+    file_id=file_id,
+    caption=f_caption,
+    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+    reply_markup=InlineKeyboardMarkup(btn)
+)
     k = await msg.reply(
         f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
         f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
