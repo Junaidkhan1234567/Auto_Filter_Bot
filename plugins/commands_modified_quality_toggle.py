@@ -370,7 +370,10 @@ async def start(client, message):
                         if count >= FILES_LIMIT:
                             await message.reply_photo(
                 photo="http://ibb.co/608JNcwR",
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            caption=f"⚠️ Hey {message.from_user.mention},\n\n"
+                                  f"You’ve used your daily limit of <b>{FILES_LIMIT}</b> files.\n"
+            f"Your limit will reset automatically in <b>{RESET_HOURS} hours</b>.\n\n"
+            f"💎 <b>Upgrade to Premium</b> for unlimited downloads, faster speed, and exclusive features!",
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
@@ -424,7 +427,10 @@ async def start(client, message):
                         if count >= FILES_LIMIT:
                             await message.reply_photo(
                 photo="http://ibb.co/608JNcwR",
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            caption=f"⚠️ Hey {message.from_user.mention},\n\n"
+                                  f"You’ve used your daily limit of <b>{FILES_LIMIT}</b> files.\n"
+            f"Your limit will reset automatically in <b>{RESET_HOURS} hours</b>.\n\n"
+            f"💎 <b>Upgrade to Premium</b> for unlimited downloads, faster speed, and exclusive features!",
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
@@ -528,7 +534,10 @@ async def start(client, message):
                         if count >= FILES_LIMIT:
                             await message.reply_photo(
                 photo="http://ibb.co/608JNcwR",
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            caption=f"⚠️ Hey {message.from_user.mention},\n\n"
+                                  f"You’ve used your daily limit of <b>{FILES_LIMIT}</b> files.\n"
+            f"Your limit will reset automatically in <b>{RESET_HOURS} hours</b>.\n\n"
+            f"💎 <b>Upgrade to Premium</b> for unlimited downloads, faster speed, and exclusive features!",
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
