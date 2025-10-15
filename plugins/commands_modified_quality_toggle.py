@@ -368,7 +368,13 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            return await message.reply_photo(
+                                photo=random.choice(PICS),
+                                caption=(
+                                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+                                ),
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
@@ -420,7 +426,13 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            return await message.reply_photo(
+                                photo=random.choice(PICS),
+                                caption=(
+                                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+                                ),
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
@@ -522,7 +534,19 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            return await message.reply_photo(
+
+                                photo=random.choice(PICS),
+
+                                caption=(
+
+                                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+
+                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+
+                                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+
+                                ), 
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
