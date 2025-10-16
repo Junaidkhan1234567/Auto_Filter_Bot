@@ -368,12 +368,10 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                           return await massage.reply_text("🚫 You've Reached Daily Free Limit of 5.\n⏳Your Limit Reset Automatically in 24 Hours.\n💳 Upgrade To Premium for unlimited file access and Fast Download.")
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
-                        await message.reply_photo(
-                photo="http://ibb.co/608JNcwR",
-                       caption=f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
                     file_id=file_id,
@@ -422,12 +420,10 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await massage.reply_text("🚫 You've Reached Daily Free Limit of 5.\n⏳Your Limit Reset Automatically in 24 Hours.\n💳 Upgrade To Premium for unlimited file access and Fast Download.")
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
-                                 await message.reply_photo(
-                photo="http://ibb.co/608JNcwR",
-                       caption=f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
@@ -526,12 +522,10 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 You've Reached Daily Free Limit of 5.\n⏳Your Limit Reset Automatically in 24 Hours.\n💳 Upgrade To Premium for unlimited file access and Fast Download.")
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
-                                 await message.reply_photo(
-                photo="http://ibb.co/608JNcwR",
-                        caption=f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
