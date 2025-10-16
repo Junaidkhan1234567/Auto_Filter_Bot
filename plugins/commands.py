@@ -20,7 +20,7 @@ from database.users_chats_db import db
 from info import *
 from utils import get_settings, save_group_settings, is_subscribed, is_req_subscribed, get_size, get_shortlink, is_check_admin, temp, get_readable_time, get_time, generate_settings_text, log_error, clean_filename
 import time
-
+from info import IS_FILE_LIMIT, FILES_LIMIT
 
 
 logging.basicConfig(level=logging.ERROR)
@@ -319,175 +319,590 @@ async def start(client, message):
     files_ = await file_details_task
 
     if data.startswith("allfiles"):
+
         try:
+
             files = temp.GETALL.get(file_id)
+
             if not files:
+
                 return await message.reply('<b><i>ɴᴏ ꜱᴜᴄʜ ꜰɪʟᴇ ᴇxɪꜱᴛꜱ !</b></i>')
+
             filesarr = []
+
             for file in files:
+
                 file_id = file.file_id
+
                 files_ = await get_file_details(file_id)
+
                 files1 = files_[0]
+
                 title = clean_filename(files1.file_name)
+
                 size = get_size(files1.file_size)
+
                 f_caption = files1.caption
+
                 settings = await get_settings(int(grp_id))
+
                 DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
+
                 if DREAMX_CAPTION:
+
                     try:
+
                         f_caption=DREAMX_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+
                     except Exception as e:
+
                         logger.exception(e)
+
                         f_caption = f_caption
+
                 if f_caption is None:
+
                     f_caption = f"{clean_filename(files1.file_name)}"
+
                 
+
                 if STREAM_MODE and not PREMIUM_STREAM_MODE:
+
                     
+
                     btn = [
+
                         [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+
                         [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
                     ]
+
                 elif STREAM_MODE and PREMIUM_STREAM_MODE:
+
                     
+
                     if not await db.has_premium_access(message.from_user.id):
+
                         
+
                         btn = [
+
                             [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
+
                             [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
                         ]
+
                     else:
+
                         
+
                         btn = [
+
                             [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+
                             [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
                         ]
+
                 else:
+
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
+
+                if IS_FILE_LIMIT:
+
+                    is_premium = await db.has_premium_access(message.from_user.id)
+
+                    if not is_premium:
+
+                        used = await db.get_user_file_count(message.from_user.id)
+
+                        if used >= FILES_LIMIT:
+
+                            # When user reaches their daily limit
+
+                            btn = [
+
+                                [
+
+                                    InlineKeyboardButton("💎 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ", callback_data="premium_info"),
+
+                                ],
+
+                                [
+
+                                    InlineKeyboardButton("📢 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ", url=UPDATE_CHNL_LNK),
+
+                                ]
+
+                            ]
+
+                            reply_markup = InlineKeyboardMarkup(btn)
+
+
+
+                            return await message.reply_photo(
+
+                                photo=random.choice(PICS),
+
+                                caption=(
+
+                                    f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+
+                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+
+                                    f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+
+                                ),
+
+                                reply_markup=reply_markup,
+
+                                parse_mode=enums.ParseMode.HTML
+
+                            )
+
+
+
+                        # If user still has limit left
+
+                        await db.increment_file_count(message.from_user.id)
+
+                        remaining = await db.get_remaining_files(message.from_user.id, FILES_LIMIT)
+
+                        await message.reply_text(f"📦 Remaining limit: <b>{remaining}</b> files today.")  
+
                 msg = await client.send_cached_media(
+
                     chat_id=message.from_user.id,
+
                     file_id=file_id,
+
                     caption=f_caption,
+
                     protect_content=settings.get('file_secure', PROTECT_CONTENT),
+
                     reply_markup=InlineKeyboardMarkup(btn)
+
                 )
+
                 filesarr.append(msg)
-            k = await client.send_message(chat_id=message.from_user.id, text=script.DEL_MSG.format(get_time(DELETE_TIME)), parse_mode=enums.ParseMode.HTML)
+
+            k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
+
             await asyncio.sleep(DELETE_TIME)
+
             for x in filesarr:
+
                 await x.delete()
+
             await k.edit_text("<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏꜱ/ꜰɪʟᴇꜱ ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ !\nᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
+
             return
+
         except Exception as e:
+
             logger.exception(e)
+
             return
+
+
 
     user = message.from_user.id
+
+    files_ = await get_file_details(file_id)
+
     settings = await get_settings(int(grp_id))
+
     if not files_:
+
         pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")).split("_", 1)
+
         try:
+
             if STREAM_MODE and not PREMIUM_STREAM_MODE:
+
                 btn = [
+
                     [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+
                     [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
                 ]
+
             elif STREAM_MODE and PREMIUM_STREAM_MODE:
+
                 if not await db.has_premium_access(message.from_user.id):
+
                    btn = [
+
                         [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
+
                         [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
                     ]
+
                 else:
+
                     btn = [
+
                         [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+
                         [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
                     ]
+
             else:
+
             
+
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
+
+            if IS_FILE_LIMIT:
+
+                is_premium = await db.has_premium_access(message.from_user.id)
+
+                if not is_premium:
+
+                    used = await db.get_user_file_count(message.from_user.id)
+
+                    if used >= FILES_LIMIT:
+
+                        # When user reaches their daily limit
+
+                        btn = [
+
+                            [
+
+                                InlineKeyboardButton("💎 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ", callback_data="premium_info"),
+
+                            ],
+
+                            [
+
+                                InlineKeyboardButton("📢 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ", url=UPDATE_CHNL_LNK),
+
+                            ]
+
+                        ]
+
+                        reply_markup = InlineKeyboardMarkup(btn)
+
+
+
+                        return await message.reply_photo(
+
+                            photo=random.choice(PICS),
+
+                            caption=(
+
+                                f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+
+                                f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+
+                                f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+
+                            ),
+
+                            reply_markup=reply_markup,
+
+                            parse_mode=enums.ParseMode.HTML
+
+                        )
+
+
+
+                    # If user still has limit left
+
+                    await db.increment_file_count(message.from_user.id)
+
+                    remaining = await db.get_remaining_files(message.from_user.id, FILES_LIMIT)
+
+                    await message.reply_text(f"📦 Remaining limit: <b>{remaining}</b> files today.")
+
+
+
+
+
             msg = await client.send_cached_media(
+
                 chat_id=message.from_user.id,
+
                 file_id=file_id,
+
                 protect_content=settings.get('file_secure', PROTECT_CONTENT),
+
                 reply_markup=InlineKeyboardMarkup(btn))
 
+
+
             filetype = msg.media
+
             file = getattr(msg, filetype.value)
+
             title = clean_filename(file.file_name)
+
             size=get_size(file.file_size)
+
             f_caption = f"<code>{title}</code>"
+
             settings = await get_settings(int(grp_id))
+
             DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
+
             if DREAMX_CAPTION:
+
                 try:
+
                     f_caption=DREAMX_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
+
                 except:
+
                     return
+
             await msg.edit_caption(
+
                 f_caption,
+
                 reply_markup=InlineKeyboardMarkup(btn)
+
             )
-            k = await msg.reply(script.DEL_MSG.format(get_time(DELETE_TIME)),
-                quote=True, parse_mode=enums.ParseMode.HTML
+
+            k = await msg.reply(
+
+                f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
+
+                f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
+
+                "(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
+
+                "<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>",
+
+                quote=True
+
             )
+
             await asyncio.sleep(DELETE_TIME)
+
             await msg.delete()
+
             await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !!</b>")
+
             return
+
         except Exception as e:
+
             logger.exception(e)
+
             pass
+
         return await message.reply('ɴᴏ ꜱᴜᴄʜ ꜰɪʟᴇ ᴇxɪꜱᴛꜱ !')
+
     
+
     files = files_[0]
+
     title = clean_filename(files.file_name)
+
     size = get_size(files.file_size)
+
     f_caption = files.caption
+
     settings = await get_settings(int(grp_id))            
+
     DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
+
     if DREAMX_CAPTION:
+
         try:
+
             f_caption=DREAMX_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+
         except Exception as e:
+
             logger.exception(e)
+
             f_caption = f_caption
 
+
+
     if f_caption is None:
+
         f_caption = clean_filename(files.file_name)
+
     
+
     if STREAM_MODE and not PREMIUM_STREAM_MODE:
+
         btn = [
+
             [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+
             [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
         ]
+
     elif STREAM_MODE and PREMIUM_STREAM_MODE:
+
         if not await db.has_premium_access(message.from_user.id):
+
             btn = [
+
                 [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
+
                 [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
             ]
+
         else:
+
             btn = [
+
                 [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+
                 [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+
             ]
+
     else:
+
         btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
+
+    if IS_FILE_LIMIT:
+
+        is_premium = await db.has_premium_access(message.from_user.id)
+
+        if not is_premium:
+
+            used = await db.get_user_file_count(message.from_user.id)
+
+            if used >= FILES_LIMIT:
+
+                # When user reaches their daily limit
+
+                btn = [
+
+                    [
+
+                        InlineKeyboardButton("💎 ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ", callback_data="premium_info"),
+
+                    ],
+
+                    [
+
+                        InlineKeyboardButton("📢 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ", url=UPDATE_CHNL_LNK),
+
+                    ]
+
+                ]
+
+                reply_markup = InlineKeyboardMarkup(btn)
+
+
+
+                return await message.reply_photo(
+
+                    photo=random.choice(PICS),
+
+                    caption=(
+
+                        f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
+
+                        f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+
+                        f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
+
+                    ),
+
+                    reply_markup=reply_markup,
+
+                    parse_mode=enums.ParseMode.HTML
+
+                )
+
+
+
+            # If user still has limit left
+
+            await db.increment_file_count(message.from_user.id)
+
+            remaining = await db.get_remaining_files(message.from_user.id, FILES_LIMIT)
+
+            await message.reply_text(f"📦 Remaining limit: <b>{remaining}</b> files today.")
+
+
+
+
+
     msg = await client.send_cached_media(
+
         chat_id=message.from_user.id,
+
         file_id=file_id,
+
         caption=f_caption,
+
         protect_content=settings.get('file_secure', PROTECT_CONTENT),
+
         reply_markup=InlineKeyboardMarkup(btn)
+
     )
-    k = await msg.reply(script.DEL_MSG.format(get_time(DELETE_TIME)),
-        quote=True, parse_mode=enums.ParseMode.HTML
+
+    k = await msg.reply(
+
+        f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
+
+        f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
+
+        "(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
+
+        "<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>",
+
+        quote=True
+
     )     
+
     await asyncio.sleep(DELETE_TIME)
+
     await msg.delete()
+
     await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !!</b>")
+
     return
+
+
+
+
+
+@Client.on_message(filters.command("resetlimit") & filters.user(ADMINS))
+
+async def reset_limit_command(_, message):
+
+    try:
+
+        args = message.text.split()
+
+        if len(args) == 1:
+
+            await db.reset_file_count()  # Reset all
+
+            return await message.reply_text("♻️ All users’ file limits have been reset.")
+
+        elif len(args) == 2:
+
+            user_id = int(args[1])
+
+            await db.reset_file_count(user_id)
+
+            return await message.reply_text(f"✅ File limit reset for user <code>{user_id}</code>.")
+
+        else:
+
+            return await message.reply_text("Usage:\n/resetlimit (for all)\n/resetlimit <user_id>")
+
+    except Exception as e:
+
+        await message.reply_text(f"❌ Error: {e}")
 
 @Client.on_message(filters.command('logs') & filters.user(ADMINS))
 async def log_file(bot, message):
