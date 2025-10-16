@@ -372,6 +372,8 @@ async def start(client, message):
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                        await asyncio.sleep(15)  # ⏳ wait 15 seconds
+                        await alert_msg.delete()  # 🗑️ delete message
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
                     file_id=file_id,
@@ -424,6 +426,8 @@ async def start(client, message):
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                        await asyncio.sleep(15)  # ⏳ wait 15 seconds
+                        await alert_msg.delete()  # 🗑️ delete message
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
@@ -526,6 +530,8 @@ async def start(client, message):
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                        await asyncio.sleep(15)
+                        await alert_msg.delete()  # 🗑️ delete message
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
