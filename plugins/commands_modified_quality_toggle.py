@@ -371,6 +371,8 @@ async def start(client, message):
                             return await message.reply_text("🚫 You've Reached Daily Free Limit of 5.\n⏳Your Limit Reset Automatically in 24 Hours.\n💳 Upgrade To Premium for unlimited file access and Fast Download.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
+                        await message.reply_photo(
+                photo="http://ibb.co/608JNcwR",
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
@@ -423,6 +425,8 @@ async def start(client, message):
                             return await message.reply_text("🚫 You've Reached Daily Free Limit of 5.\n⏳Your Limit Reset Automatically in 24 Hours.\n💳 Upgrade To Premium for unlimited file access and Fast Download.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
+                                 await message.reply_photo(
+                photo="http://ibb.co/608JNcwR",
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
@@ -525,6 +529,8 @@ async def start(client, message):
                             return await message.reply_text("🚫 You've Reached Daily Free Limit of 5.\n⏳Your Limit Reset Automatically in 24 Hours.\n💳 Upgrade To Premium for unlimited file access and Fast Download.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
+                                 await message.reply_photo(
+                photo="http://ibb.co/608JNcwR",
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
