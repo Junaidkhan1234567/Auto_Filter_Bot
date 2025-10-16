@@ -378,6 +378,10 @@ async def start(client, message):
                     caption=f_caption,
                     protect_content=settings.get('file_secure', PROTECT_CONTENT),
                     reply_markup=InlineKeyboardMarkup(btn)
+                    return await message.reply_photo(
+                            photo=random.choice(PICS),
+                    reply_markup=reply_markup,
+                            parse_mode=enums.ParseMode.HTML
                 )
                 filesarr.append(msg)
             k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
@@ -445,6 +449,10 @@ async def start(client, message):
             await msg.edit_caption(
                 f_caption,
                 reply_markup=InlineKeyboardMarkup(btn)
+                return await message.reply_photo(
+                            photo=random.choice(PICS),
+                    reply_markup=reply_markup,
+                            parse_mode=enums.ParseMode.HTML
             )
             k = await msg.reply(
                 f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
@@ -532,6 +540,10 @@ async def start(client, message):
         caption=f_caption,
         protect_content=settings.get('file_secure', PROTECT_CONTENT),
         reply_markup=InlineKeyboardMarkup(btn)
+        return await message.reply_photo(
+                            photo=random.choice(PICS),
+                    reply_markup=reply_markup,
+                            parse_mode=enums.ParseMode.HTML
     )
     k = await msg.reply(
         f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
