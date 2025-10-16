@@ -363,72 +363,32 @@ async def start(client, message):
                 else:
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
             
-                user_id = message.from_user.id
-                if FILES_LIMIT and not is_premium:
-    is_premium = await db.has_premium_access(message.from_user.id)
-    if not is_premium:
-        count = await db.get_user_limit(message.from_user.id)
-        if count >= FILES_LIMIT:
-            alert_msg = await message.reply_text(
-                "🚫 You've Reached Daily Free Limit of 5.\n"
-                "⏳ Your Limit Reset Automatically in 24 Hours.\n"
-                "💳 Upgrade To Premium for unlimited file access and Fast Download.\n\n"
-                "<i>Message auto-deletes in 15s...</i>"
-            )
-            # countdown animation ⏳
-            for i in range(14, 0, -1):
-                await asyncio.sleep(1)
-                try:
-                    await alert_msg.edit_text(
-                        f"🚫 You've Reached Daily Free Limit of 5.\n"
-                        f"⏳ Your Limit Reset Automatically in 24 Hours.\n"
-                        f"💳 Upgrade To Premium for unlimited file access and Fast Download.\n\n"
-                        f"<i>Message auto-deletes in {i}s...</i>"
-                    )
-                except:
-                    break
-            await alert_msg.delete()
-            return
-        
-        await db.increment_user_limit(message.from_user.id)
-        remaining = FILES_LIMIT - count - 1
-        alert_msg = await message.reply_text(
-            f"📦 Remaining limit: {remaining}/{FILES_LIMIT}\n\n"
-            "<i>Message auto-deletes in 15s...</i>"
-        )
-        for i in range(14, 0, -1):
-            await asyncio.sleep(1)
-            try:
-                await alert_msg.edit_text(
-                    f"📦 Remaining limit: {remaining}/{FILES_LIMIT}\n\n"
-                    f"<i>Message auto-deletes in {i}s...</i>"
+                if IS_FILE_LIMIT:
+                    is_premium = await db.has_premium_access(message.from_user.id)
+                    if not is_premium:
+                        count = await db.get_user_limit(message.from_user.id)
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                msg = await client.send_cached_media(
+                    chat_id=message.from_user.id,
+                    file_id=file_id,
+                    caption=f_caption,
+                    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+                    reply_markup=InlineKeyboardMarkup(btn)
                 )
-            except:
-                break
-        await alert_msg.delete()
-
-msg = await client.send_cached_media(
-    chat_id=message.from_user.id,
-    file_id=file_id,
-    caption=f_caption,
-    protect_content=settings.get('file_secure', PROTECT_CONTENT),
-    reply_markup=InlineKeyboardMarkup(btn)
-)
-filesarr.append(msg)
-
-k = await client.send_message(
-    chat_id=message.from_user.id,
-    text=(
-        f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
-        f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 </b>"
-        f"<i>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
-        f"<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>"
-)
-await asyncio.sleep(DELETE_TIME)
-for x in filesarr:
-    await x.delete()
-await k.edit_text("<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏꜱ/ꜰɪʟᴇꜱ ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ !\nᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
-return
+                filesarr.append(msg)
+            k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
+            await asyncio.sleep(DELETE_TIME)
+            for x in filesarr:
+                await x.delete()
+            await k.edit_text("<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏꜱ/ꜰɪʟᴇꜱ ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ !\nᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
+            return
+        except Exception as e:
+            logger.exception(e)
+            return
 
     user = message.from_user.id
     files_ = await get_file_details(file_id)
@@ -455,72 +415,48 @@ return
             else:
             
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            user_id = message.from_user.id
-                if FILES_LIMIT and not is_premium:
-    is_premium = await db.has_premium_access(message.from_user.id)
-    if not is_premium:
-        count = await db.get_user_limit(message.from_user.id)
-        if count >= FILES_LIMIT:
-            alert_msg = await message.reply_text(
-                "🚫 You've Reached Daily Free Limit of 5.\n"
-                "⏳ Your Limit Reset Automatically in 24 Hours.\n"
-                "💳 Upgrade To Premium for unlimited file access and Fast Download.\n\n"
-                "<i>Message auto-deletes in 15s...</i>"
-            )
-            # countdown animation ⏳
-            for i in range(14, 0, -1):
-                await asyncio.sleep(1)
+            if IS_FILE_LIMIT:
+                    is_premium = await db.has_premium_access(message.from_user.id)
+                    if not is_premium:
+                        count = await db.get_user_limit(message.from_user.id)
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+            msg = await client.send_cached_media(
+                chat_id=message.from_user.id,
+                file_id=file_id,
+                protect_content=settings.get('file_secure', PROTECT_CONTENT),
+                reply_markup=InlineKeyboardMarkup(btn))
+
+            filetype = msg.media
+            file = getattr(msg, filetype.value)
+            title = clean_filename(file.file_name)
+            size=get_size(file.file_size)
+            f_caption = f"<code>{title}</code>"
+            settings = await get_settings(int(grp_id))
+            DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
+            if DREAMX_CAPTION:
                 try:
-                    await alert_msg.edit_text(
-                        f"🚫 You've Reached Daily Free Limit of 5.\n"
-                        f"⏳ Your Limit Reset Automatically in 24 Hours.\n"
-                        f"💳 Upgrade To Premium for unlimited file access and Fast Download.\n\n"
-                        f"<i>Message auto-deletes in {i}s...</i>"
-                    )
+                    f_caption=DREAMX_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
                 except:
-                    break
-            await alert_msg.delete()
+                    return
+            await msg.edit_caption(
+                f_caption,
+                reply_markup=InlineKeyboardMarkup(btn)
+            )
+            k = await msg.reply(
+                f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
+                f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
+                "(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
+                "<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>",
+                quote=True
+            )
+            await asyncio.sleep(DELETE_TIME)
+            await msg.delete()
+            await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !! ᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
             return
-        
-        await db.increment_user_limit(message.from_user.id)
-        remaining = FILES_LIMIT - count - 1
-        alert_msg = await message.reply_text(
-            f"📦 Remaining limit: {remaining}/{FILES_LIMIT}\n\n"
-            "<i>Message auto-deletes in 15s...</i>"
-        )
-        for i in range(14, 0, -1):
-            await asyncio.sleep(1)
-            try:
-                await alert_msg.edit_text(
-                    f"📦 Remaining limit: {remaining}/{FILES_LIMIT}\n\n"
-                    f"<i>Message auto-deletes in {i}s...</i>"
-                )
-            except:
-                break
-        await alert_msg.delete()
-
-msg = await client.send_cached_media(
-    chat_id=message.from_user.id,
-    file_id=file_id,
-    caption=f_caption,
-    protect_content=settings.get('file_secure', PROTECT_CONTENT),
-    reply_markup=InlineKeyboardMarkup(btn)
-)
-filesarr.append(msg)
-
-k = await client.send_message(
-    chat_id=message.from_user.id,
-    text=(
-        f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
-        f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 </b>"
-        f"<i>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
-        f"<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>"
-)
-await asyncio.sleep(DELETE_TIME)
-for x in filesarr:
-    await x.delete()
-await k.edit_text("<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏꜱ/ꜰɪʟᴇꜱ ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ !\nᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
-return
         except Exception as e:
             logger.exception(e)
             pass
@@ -581,72 +517,33 @@ return
             ]
     else:
         btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-    user_id = message.from_user.id
-                if FILES_LIMIT and not is_premium:
-    is_premium = await db.has_premium_access(message.from_user.id)
-    if not is_premium:
-        count = await db.get_user_limit(message.from_user.id)
-        if count >= FILES_LIMIT:
-            alert_msg = await message.reply_text(
-                "🚫 You've Reached Daily Free Limit of 5.\n"
-                "⏳ Your Limit Reset Automatically in 24 Hours.\n"
-                "💳 Upgrade To Premium for unlimited file access and Fast Download.\n\n"
-                "<i>Message auto-deletes in 15s...</i>"
-            )
-            # countdown animation ⏳
-            for i in range(14, 0, -1):
-                await asyncio.sleep(1)
-                try:
-                    await alert_msg.edit_text(
-                        f"🚫 You've Reached Daily Free Limit of 5.\n"
-                        f"⏳ Your Limit Reset Automatically in 24 Hours.\n"
-                        f"💳 Upgrade To Premium for unlimited file access and Fast Download.\n\n"
-                        f"<i>Message auto-deletes in {i}s...</i>"
-                    )
-                except:
-                    break
-            await alert_msg.delete()
-            return
-        
-        await db.increment_user_limit(message.from_user.id)
-        remaining = FILES_LIMIT - count - 1
-        alert_msg = await message.reply_text(
-            f"📦 Remaining limit: {remaining}/{FILES_LIMIT}\n\n"
-            "<i>Message auto-deletes in 15s...</i>"
-        )
-        for i in range(14, 0, -1):
-            await asyncio.sleep(1)
-            try:
-                await alert_msg.edit_text(
-                    f"📦 Remaining limit: {remaining}/{FILES_LIMIT}\n\n"
-                    f"<i>Message auto-deletes in {i}s...</i>"
-                )
-            except:
-                break
-        await alert_msg.delete()
-
-msg = await client.send_cached_media(
-    chat_id=message.from_user.id,
-    file_id=file_id,
-    caption=f_caption,
-    protect_content=settings.get('file_secure', PROTECT_CONTENT),
-    reply_markup=InlineKeyboardMarkup(btn)
-)
-filesarr.append(msg)
-
-k = await client.send_message(
-    chat_id=message.from_user.id,
-    text=(
+    if IS_FILE_LIMIT:
+                    is_premium = await db.has_premium_access(message.from_user.id)
+                    if not is_premium:
+                        count = await db.get_user_limit(message.from_user.id)
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+    msg = await client.send_cached_media(
+        chat_id=message.from_user.id,
+        file_id=file_id,
+        caption=f_caption,
+        protect_content=settings.get('file_secure', PROTECT_CONTENT),
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
+    k = await msg.reply(
         f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
-        f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 </b>"
-        f"<i>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
-        f"<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>"
-)
-await asyncio.sleep(DELETE_TIME)
-for x in filesarr:
-    await x.delete()
-await k.edit_text("<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏꜱ/ꜰɪʟᴇꜱ ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ !\nᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
-return
+        f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
+        "(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
+        "<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>",
+        quote=True
+    )     
+    await asyncio.sleep(DELETE_TIME)
+    await msg.delete()
+    await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !!</b>")
+    return
 
 @Client.on_message(filters.command('logs') & filters.user(ADMINS))
 async def log_file(bot, message):
