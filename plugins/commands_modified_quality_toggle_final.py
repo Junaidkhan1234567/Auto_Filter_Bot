@@ -363,7 +363,7 @@ async def start(client, message):
                 else:
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
             
-                if IS_FILE_LIMIT:
+                    user_id = message.from_user.id
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
@@ -427,7 +427,7 @@ return
             else:
             
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            if IS_FILE_LIMIT:
+                    user_id = message.from_user.id
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
@@ -541,7 +541,7 @@ return
             ]
     else:
         btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-    if IS_FILE_LIMIT:
+                    user_id = message.from_user.id
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
