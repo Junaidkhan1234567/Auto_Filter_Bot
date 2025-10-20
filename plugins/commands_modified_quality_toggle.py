@@ -372,14 +372,13 @@ async def start(client, message):
                 [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
                     file_id=file_id,
-                    caption=f_caption,
+                    caption=f"🚫 Daily download limit reached. Try again after 24 hours.",
                     protect_content=settings.get('file_secure', PROTECT_CONTENT),
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
@@ -428,13 +427,13 @@ async def start(client, message):
                 [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
+                caption=f"🚫 Daily download limit reached. Try again after 24 hours.",
                 protect_content=settings.get('file_secure', PROTECT_CONTENT),
                 reply_markup=InlineKeyboardMarkup(btn))
 
@@ -534,14 +533,13 @@ async def start(client, message):
                 [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
-        caption=f_caption,
+        caption=f"🚫 Daily download limit reached. Try again after 24 hours.",
         protect_content=settings.get('file_secure', PROTECT_CONTENT),
         reply_markup=InlineKeyboardMarkup(btn)
     )
