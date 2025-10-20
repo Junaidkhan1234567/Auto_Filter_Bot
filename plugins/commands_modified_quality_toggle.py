@@ -363,11 +363,11 @@ async def start(client, message):
                 else:
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
             
-                if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
+                if ISFILELIMIT:
+                    ispremium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
+                        if count >= FILESLIMIT:
                             buttons = [
                 [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
             ]
@@ -377,7 +377,7 @@ async def start(client, message):
                 reply_markup=reply_markup
             ) 
                         #await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
+                        remaining = FILESLIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
@@ -422,11 +422,11 @@ async def start(client, message):
             else:
             
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
+            if ISFILELIMIT:
+                    ispremium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
+                        if count >= FILESLIMIT:
                             buttons = [
                 [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
             ]
@@ -436,7 +436,7 @@ async def start(client, message):
                 reply_markup=reply_markup
             )
                        # await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
+                        remaining = FILESLIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
@@ -531,11 +531,11 @@ async def start(client, message):
             ]
     else:
         btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-    if IS_FILE_LIMIT:
+    if ISFILELIMIT:
                     is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
+                    if not ispremium:
                         count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
+                        if count >= FILESLIMIT:
                             buttons = [
                 [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
             ]
@@ -545,7 +545,7 @@ async def start(client, message):
                 reply_markup=reply_markup
             )
                        # await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
+                        remaining = FILESLIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
