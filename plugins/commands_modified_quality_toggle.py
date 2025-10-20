@@ -368,7 +368,14 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            buttons = [
+                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
+            ]
+            reply_markup = InlineKeyboardMarkup(buttons)
+            return await message.reply_text(
+                "Daily download limit reached. Try again after 24 hours.",
+                reply_markup=reply_markup
+            ) 
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
@@ -420,7 +427,14 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            buttons = [
+                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
+            ]
+            reply_markup = InlineKeyboardMarkup(buttons)
+            return await message.reply_text(
+                "Daily download limit reached. Try again after 24 hours.",
+                reply_markup=reply_markup
+            )
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
@@ -522,7 +536,14 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         if count >= FILES_LIMIT:
-                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                            buttons = [
+                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
+            ]
+            reply_markup = InlineKeyboardMarkup(buttons)
+            return await message.reply_text(
+                "Daily download limit reached. Try again after 24 hours.",
+                reply_markup=reply_markup
+            )
                         await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
