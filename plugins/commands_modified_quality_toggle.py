@@ -292,6 +292,12 @@ async def start(client, message):
                 return
         except Exception as e:
             print(f"Error In Verification - {e}")
+            pass
+
+
+    # Now, await the file details task
+    files_ = await file_details_task
+    
 if data.startswith("allfiles"):
         try:
             files = temp.GETALL.get(file_id)
