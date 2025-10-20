@@ -376,7 +376,7 @@ async def start(client, message):
                 "Daily download limit reached. Try again after 24 hours.",
                 reply_markup=reply_markup
             ) 
-                        await db.increment_user_limit(message.from_user.id)
+                        #await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
                 msg = await client.send_cached_media(
@@ -435,7 +435,7 @@ async def start(client, message):
                 "Daily download limit reached. Try again after 24 hours.",
                 reply_markup=reply_markup
             )
-                        await db.increment_user_limit(message.from_user.id)
+                       # await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
             msg = await client.send_cached_media(
@@ -544,7 +544,7 @@ async def start(client, message):
                 "Daily download limit reached. Try again after 24 hours.",
                 reply_markup=reply_markup
             )
-                        await db.increment_user_limit(message.from_user.id)
+                       # await db.increment_user_limit(message.from_user.id)
                         remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
     msg = await client.send_cached_media(
