@@ -19,10 +19,6 @@ from database.ia_filterdb import Media, Media2, get_file_details, unpack_new_fil
 from database.users_chats_db import db
 from info import *
 from utils import get_settings, save_group_settings, is_subscribed, is_req_subscribed, get_size, get_shortlink, is_check_admin, temp, get_readable_time, get_time, generate_settings_text, log_error, clean_filename
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from info import UPDATE_CHNL_LNK, IS_FILE_LIMIT, FILES_LIMIT
-from utils import get_time
-
 
 
 
@@ -367,63 +363,22 @@ async def start(client, message):
                 else:
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
             
-                async def handle_file_limit(message):
-    """Reusable file limit checker with premium alert."""
-    if IS_FILE_LIMIT:
-        is_premium = await db.has_premium_access(message.from_user.id)
-        if not is_premium:
-            count = await db.get_user_limit(message.from_user.id)
-            if count >= FILES_LIMIT:
-                # 🚫 New alert message with buttons
-                buttons = [[
-                    InlineKeyboardButton("💎 Buy Premium", callback_data="premium_info")
-                ],[
-                    InlineKeyboardButton("📌 Join Updates Channel", url=UPDATE_CHNL_LNK)
-                ]]
-                reply_markup = InlineKeyboardMarkup(buttons)
-                await message.reply_photo(
-                    photo="https://graph.org/file/7478ff3eac37f4329c3d8.jpg",
-                    caption=(
-                        f"🚫 Hey {message.from_user.mention},\n\n"
-                        "You’ve reached your **daily file limit** ⚠️\n\n"
-                        "Upgrade to **Premium** for unlimited downloads 🎟"
-                    ),
-                    reply_markup=reply_markup,
-                    parse_mode=enums.ParseMode.HTML
+                if IS_FILE_LIMIT:
+                    is_premium = await db.has_premium_access(message.from_user.id)
+                    if not is_premium:
+                        count = await db.get_user_limit(message.from_user.id)
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+                msg = await client.send_cached_media(
+                    chat_id=message.from_user.id,
+                    file_id=file_id,
+                    caption=f_caption,
+                    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+                    reply_markup=InlineKeyboardMarkup(btn)
                 )
-                return False
-            else:
-                await db.increment_user_limit(message.from_user.id)
-                remaining = FILES_LIMIT - count - 1
-                await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-    return True
-    
-
-# Example integration demonstration (replace this call at each file send section)
-@Client.on_message(filters.command("testlimit"))
-async def test_limit(client, message):
-    ok = await handle_file_limit(message)
-    if not ok:
-        return
-    await message.reply_text("✅ File sending allowed! You’re under the limit.")
-
-
-# Dummy DB for test (comment this when running real bot)
-class DummyDB:
-    def __init__(self):
-        self.limits = {}
-
-    async def has_premium_access(self, user_id):
-        return False
-
-    async def get_user_limit(self, user_id):
-        return self.limits.get(user_id, 0)
-
-    async def increment_user_limit(self, user_id):
-        self.limits[user_id] = self.limits.get(user_id, 0) + 1
-
-db = DummyDB()
-
                 filesarr.append(msg)
             k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
             await asyncio.sleep(DELETE_TIME)
@@ -460,62 +415,20 @@ db = DummyDB()
             else:
             
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            async def handle_file_limit(message):
-    """Reusable file limit checker with premium alert."""
-    if IS_FILE_LIMIT:
-        is_premium = await db.has_premium_access(message.from_user.id)
-        if not is_premium:
-            count = await db.get_user_limit(message.from_user.id)
-            if count >= FILES_LIMIT:
-                # 🚫 New alert message with buttons
-                buttons = [[
-                    InlineKeyboardButton("💎 Buy Premium", callback_data="premium_info")
-                ],[
-                    InlineKeyboardButton("📌 Join Updates Channel", url=UPDATE_CHNL_LNK)
-                ]]
-                reply_markup = InlineKeyboardMarkup(buttons)
-                await message.reply_photo(
-                    photo="https://graph.org/file/7478ff3eac37f4329c3d8.jpg",
-                    caption=(
-                        f"🚫 Hey {message.from_user.mention},\n\n"
-                        "You’ve reached your **daily file limit** ⚠️\n\n"
-                        "Upgrade to **Premium** for unlimited downloads 🎟"
-                    ),
-                    reply_markup=reply_markup,
-                    parse_mode=enums.ParseMode.HTML
-                )
-                return False
-            else:
-                await db.increment_user_limit(message.from_user.id)
-                remaining = FILES_LIMIT - count - 1
-                await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-    return True
-
-
-# Example integration demonstration (replace this call at each file send section)
-@Client.on_message(filters.command("testlimit"))
-async def test_limit(client, message):
-    ok = await handle_file_limit(message)
-    if not ok:
-        return
-    await message.reply_text("✅ File sending allowed! You’re under the limit.")
-
-
-# Dummy DB for test (comment this when running real bot)
-class DummyDB:
-    def __init__(self):
-        self.limits = {}
-
-    async def has_premium_access(self, user_id):
-        return False
-
-    async def get_user_limit(self, user_id):
-        return self.limits.get(user_id, 0)
-
-    async def increment_user_limit(self, user_id):
-        self.limits[user_id] = self.limits.get(user_id, 0) + 1
-
-db = DummyDB()
+            if IS_FILE_LIMIT:
+                    is_premium = await db.has_premium_access(message.from_user.id)
+                    if not is_premium:
+                        count = await db.get_user_limit(message.from_user.id)
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+            msg = await client.send_cached_media(
+                chat_id=message.from_user.id,
+                file_id=file_id,
+                protect_content=settings.get('file_secure', PROTECT_CONTENT),
+                reply_markup=InlineKeyboardMarkup(btn))
 
             filetype = msg.media
             file = getattr(msg, filetype.value)
@@ -604,63 +517,22 @@ db = DummyDB()
             ]
     else:
         btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-    async def handle_file_limit(message):
-    """Reusable file limit checker with premium alert."""
     if IS_FILE_LIMIT:
-        is_premium = await db.has_premium_access(message.from_user.id)
-        if not is_premium:
-            count = await db.get_user_limit(message.from_user.id)
-            if count >= FILES_LIMIT:
-                # 🚫 New alert message with buttons
-                buttons = [[
-                    InlineKeyboardButton("💎 Buy Premium", callback_data="premium_info")
-                ],[
-                    InlineKeyboardButton("📌 Join Updates Channel", url=UPDATE_CHNL_LNK)
-                ]]
-                reply_markup = InlineKeyboardMarkup(buttons)
-                await message.reply_photo(
-                    photo="https://graph.org/file/7478ff3eac37f4329c3d8.jpg",
-                    caption=(
-                        f"🚫 Hey {message.from_user.mention},\n\n"
-                        "You’ve reached your **daily file limit** ⚠️\n\n"
-                        "Upgrade to **Premium** for unlimited downloads 🎟"
-                    ),
-                    reply_markup=reply_markup,
-                    parse_mode=enums.ParseMode.HTML
-                )
-                return False
-            else:
-                await db.increment_user_limit(message.from_user.id)
-                remaining = FILES_LIMIT - count - 1
-                await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-    return True
-
-
-# Example integration demonstration (replace this call at each file send section)
-@Client.on_message(filters.command("testlimit"))
-async def test_limit(client, message):
-    ok = await handle_file_limit(message)
-    if not ok:
-        return
-    await message.reply_text("✅ File sending allowed! You’re under the limit.")
-
-
-# Dummy DB for test (comment this when running real bot)
-class DummyDB:
-    def __init__(self):
-        self.limits = {}
-
-    async def has_premium_access(self, user_id):
-        return False
-
-    async def get_user_limit(self, user_id):
-        return self.limits.get(user_id, 0)
-
-    async def increment_user_limit(self, user_id):
-        self.limits[user_id] = self.limits.get(user_id, 0) + 1
-
-db = DummyDB()
-
+                    is_premium = await db.has_premium_access(message.from_user.id)
+                    if not is_premium:
+                        count = await db.get_user_limit(message.from_user.id)
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
+                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+    msg = await client.send_cached_media(
+        chat_id=message.from_user.id,
+        file_id=file_id,
+        caption=f_caption,
+        protect_content=settings.get('file_secure', PROTECT_CONTENT),
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
     k = await msg.reply(
         f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
         f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
