@@ -363,21 +363,14 @@ async def start(client, message):
                 else:
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
             
-                if ISFILELIMIT:
-                    ispremium = await db.has_premium_access(message.from_user.id)
+                if IS_FILE_LIMIT:
+                    is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILESLIMIT:
-                            buttons = [
-                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            return await message.reply_text(
-                "Daily download limit reached. Try again after 24 hours.",
-                reply_markup=reply_markup
-            ) 
-                        #await db.increment_user_limit(message.from_user.id)
-                        remaining = FILESLIMIT - count - 1
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
@@ -422,21 +415,14 @@ async def start(client, message):
             else:
             
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            if ISFILELIMIT:
-                    ispremium = await db.has_premium_access(message.from_user.id)
+            if IS_FILE_LIMIT:
+                    is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILESLIMIT:
-                            buttons = [
-                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            return await message.reply_text(
-                "Daily download limit reached. Try again after 24 hours.",
-                reply_markup=reply_markup
-            )
-                       # await db.increment_user_limit(message.from_user.id)
-                        remaining = FILESLIMIT - count - 1
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
@@ -531,21 +517,14 @@ async def start(client, message):
             ]
     else:
         btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-    if ISFILELIMIT:
+    if IS_FILE_LIMIT:
                     is_premium = await db.has_premium_access(message.from_user.id)
-                    if not ispremium:
+                    if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILESLIMIT:
-                            buttons = [
-                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            return await message.reply_text(
-                "Daily download limit reached. Try again after 24 hours.",
-                reply_markup=reply_markup
-            )
-                       # await db.increment_user_limit(message.from_user.id)
-                        remaining = FILESLIMIT - count - 1
+                        if count >= FILES_LIMIT:
+                            return await message.reply_text("🚫 Daily download limit reached. Try again after 24 hours.")
+                        await db.increment_user_limit(message.from_user.id)
+                        remaining = FILES_LIMIT - count - 1
                         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
