@@ -363,197 +363,198 @@ async def start(client, message):
                 else:
                     btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
             
-                if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            buttons = [
-                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-                msg = await client.send_cached_media(
-                    chat_id=message.from_user.id,
-                    file_id=file_id,
-                    caption=f"🚫 Daily download limit reached. Try again after 24 hours.",
-                    protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                    reply_markup=InlineKeyboardMarkup(btn)
-                )
-                filesarr.append(msg)
-            k = await client.send_message(chat_id=message.from_user.id, text=f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>")
-            await asyncio.sleep(DELETE_TIME)
-            for x in filesarr:
-                await x.delete()
-            await k.edit_text("<b>ʏᴏᴜʀ ᴀʟʟ ᴠɪᴅᴇᴏꜱ/ꜰɪʟᴇꜱ ᴀʀᴇ ᴅᴇʟᴇᴛᴇᴅ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ !\nᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
-            return
-        except Exception as e:
-            logger.exception(e)
-            return
-
-    user = message.from_user.id
+                try:
+    user_id = message.from_user.id
     files_ = await get_file_details(file_id)
     settings = await get_settings(int(grp_id))
+
     if not files_:
-        pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")).split("_", 1)
-        try:
-            if STREAM_MODE and not PREMIUM_STREAM_MODE:
-                btn = [
-                    [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                    [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
-                ]
-            elif STREAM_MODE and PREMIUM_STREAM_MODE:
-                if not await db.has_premium_access(message.from_user.id):
-                   btn = [
-                        [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
-                        [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
-                    ]
-                else:
-                    btn = [
-                        [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                        [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
-                    ]
-            else:
-            
-                btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            buttons = [
-                [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-            msg = await client.send_cached_media(
-                chat_id=message.from_user.id,
-                file_id=file_id,
-                caption=f"🚫 Daily download limit reached. Try again after 24 hours.",
-                protect_content=settings.get('file_secure', PROTECT_CONTENT),
-                reply_markup=InlineKeyboardMarkup(btn))
+        # Handle file not found
+        decoded = (base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")
+        pre, file_id = decoded.split("_", 1)
 
-            filetype = msg.media
-            file = getattr(msg, filetype.value)
-            title = clean_filename(file.file_name)
-            size=get_size(file.file_size)
-            f_caption = f"<code>{title}</code>"
-            settings = await get_settings(int(grp_id))
-            DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
-            if DREAMX_CAPTION:
-                try:
-                    f_caption=DREAMX_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
-                except:
-                    return
-            await msg.edit_caption(
-                f_caption,
-                reply_markup=InlineKeyboardMarkup(btn)
-            )
-            k = await msg.reply(
-                f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
-                f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
-                "(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
-                "<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>",
-                quote=True
-            )
-            await asyncio.sleep(DELETE_TIME)
-            await msg.delete()
-            await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !! ᴋɪɴᴅʟʏ ꜱᴇᴀʀᴄʜ ᴀɢᴀɪɴ</b>")
-            return
-        except Exception as e:
-            logger.exception(e)
-            pass
-        return await message.reply('ɴᴏ ꜱᴜᴄʜ ꜰɪʟᴇ ᴇxɪꜱᴛꜱ !')
-    
-    files = files_[0]
-    # ✅ Quality restriction for single file
-    is_premium = await db.has_premium_access(user)
-    file_quality = getattr(files, "quality", "")
-    if QUALITY_LIMIT and not is_premium:
-        if not any(q in (files.file_name or "").lower() for q in FREE_QUALITIES):
-            buttons = [[
-                InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")
-            ],[
-                InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)
-            ]]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            await message.reply_photo(
-                photo="http://ibb.co/608JNcwR",
-                caption=f"⚠️ Hey {message.from_user.mention},\n\n"
-                        f"Ye file sirf <b>Premium Users</b> ke liye available hai.\n\n"
-                        f"Free users ko sirf 360p & 480p quality milti hai ✅",
-                reply_markup=reply_markup,
-                parse_mode=enums.ParseMode.HTML
-            )
-            return
-
-    title = clean_filename(files.file_name)
-    size = get_size(files.file_size)
-    f_caption = files.caption
-    settings = await get_settings(int(grp_id))            
-    DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
-    if DREAMX_CAPTION:
-        try:
-            f_caption=DREAMX_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
-        except Exception as e:
-            logger.exception(e)
-            f_caption = f_caption
-
-    if f_caption is None:
-        f_caption = clean_filename(files.file_name)
-    
-    if STREAM_MODE and not PREMIUM_STREAM_MODE:
-        btn = [
-            [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-            [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
-        ]
-    elif STREAM_MODE and PREMIUM_STREAM_MODE:
-        if not await db.has_premium_access(message.from_user.id):
+        # Define buttons depending on STREAM_MODE and PREMIUM_STREAM_MODE
+        if STREAM_MODE and not PREMIUM_STREAM_MODE:
             btn = [
-                [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
-                [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                [InlineKeyboardButton('🚀 Fast Download / Watch Online 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+                [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
             ]
+        elif STREAM_MODE and PREMIUM_STREAM_MODE:
+            if not await db.has_premium_access(user_id):
+                btn = [
+                    [InlineKeyboardButton('🚀 Fast Download / Watch Online 🖥️', callback_data='prestream')],
+                    [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
+                ]
+            else:
+                btn = [
+                    [InlineKeyboardButton('🚀 Fast Download / Watch Online 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+                    [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
+                ]
         else:
             btn = [
-                [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
             ]
+
+        # File limit check
+        if IS_FILE_LIMIT:
+            is_premium = await db.has_premium_access(user_id)
+            if not is_premium:
+                count = await db.get_user_limit(user_id)
+                if count >= FILES_LIMIT:
+                    buttons = [
+                        [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
+                    ]
+                    reply_markup = InlineKeyboardMarkup(buttons)
+                    await message.reply_text(
+                        "🚫 Daily download limit reached. Buy premium to get unlimited access.",
+                        reply_markup=reply_markup
+                    )
+                    return
+                # Increment limit count and notify user of remaining
+                await db.increment_user_limit(user_id)
+                remaining = FILES_LIMIT - count - 1
+                await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+
+        # Send media file with deletion timer and caption
+        msg = await client.send_cached_media(
+            chat_id=user_id,
+            file_id=file_id,
+            caption="🚫 Daily download limit reached. Try again after 24 hours.",
+            protect_content=settings.get('file_secure', PROTECT_CONTENT),
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
+
+        filetype = msg.media
+        file = getattr(msg, filetype.value)
+        title = clean_filename(file.file_name)
+        size = get_size(file.file_size)
+        f_caption = f"<code>{title}</code>"
+        DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
+
+        if DREAMX_CAPTION:
+            try:
+                f_caption = DREAMX_CAPTION.format(file_name=title or '', file_size=size or '', file_caption='')
+            except Exception:
+                pass
+
+        await msg.edit_caption(f_caption, reply_markup=InlineKeyboardMarkup(btn))
+
+        k = await msg.reply(
+            f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>
+
+"
+            f"THIS MOVIE FILE/VIDEO WILL BE DELETED IN <b><u><code>{get_time(DELETE_TIME)}</code></u></b> 🫥 (Due to copyright issues).
+
+"
+            f"<b><i>PLEASE FORWARD THIS FILE SOMEWHERE ELSE AND START DOWNLOADING THERE</i></b>",
+            quote=True
+        )
+
+        await asyncio.sleep(DELETE_TIME)
+        await msg.delete()
+        await k.edit_text("<b>Your video/file is successfully deleted! Kindly search again</b>")
+        return
+
+except Exception as e:
+    logger.exception(e)
+    await message.reply('No such file exists!')
+
+# Process for files found
+files = files_[0]
+is_premium = await db.has_premium_access(user_id)
+
+# Quality restriction for free users
+if QUALITY_LIMIT and not is_premium:
+    if not any(q in (files.file_name or "").lower() for q in FREE_QUALITIES):
+        buttons = [
+            [InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")],
+            [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
+        ]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await message.reply_photo(
+            photo="http://ibb.co/608JNcwR",
+            caption=(
+                f"This file is available only for Premium Users.
+Free users get only 360p & 480p quality ✅"
+            ),
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+        )
+        return
+
+title = clean_filename(files.file_name)
+size = get_size(files.file_size)
+f_caption = files.caption or ''
+DREAMX_CAPTION = settings.get('caption', CUSTOM_FILE_CAPTION)
+
+if DREAMX_CAPTION:
+    try:
+        f_caption = DREAMX_CAPTION.format(
+            file_name=title or '',
+            file_size=size or '',
+            file_caption=f_caption
+        )
+    except Exception as e:
+        logger.exception(e)
+
+if STREAM_MODE and not PREMIUM_STREAM_MODE:
+    btn = [
+        [InlineKeyboardButton('🚀 Fast Download / Watch Online 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+        [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
+    ]
+elif STREAM_MODE and PREMIUM_STREAM_MODE:
+    if not is_premium:
+        btn = [
+            [InlineKeyboardButton('🚀 Fast Download / Watch Online 🖥️', callback_data='prestream')],
+            [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
+        ]
     else:
-        btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
-    if IS_FILE_LIMIT:
-                    is_premium = await db.has_premium_access(message.from_user.id)
-                    if not is_premium:
-                        count = await db.get_user_limit(message.from_user.id)
-                        if count >= FILES_LIMIT:
-                            buttons = [
+        btn = [
+            [InlineKeyboardButton('🚀 Fast Download / Watch Online 🖥️', callback_data=f'generate_stream_link:{file_id}')],
+            [InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]
+        ]
+else:
+    btn = [[InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)]]
+
+# File limit check before sending
+if IS_FILE_LIMIT:
+    if not is_premium:
+        count = await db.get_user_limit(user_id)
+        if count >= FILES_LIMIT:
+            buttons = [
                 [InlineKeyboardButton("Buy Premium", callback_data="premiuminfo")]
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
-                        await db.increment_user_limit(message.from_user.id)
-                        remaining = FILES_LIMIT - count - 1
-                        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
-    msg = await client.send_cached_media(
-        chat_id=message.from_user.id,
-        file_id=file_id,
-        caption=f"🚫 Daily download limit reached. Try again after 24 hours.",
-        protect_content=settings.get('file_secure', PROTECT_CONTENT),
-        reply_markup=InlineKeyboardMarkup(btn)
-    )
-    k = await msg.reply(
-        f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\n"
-        f"ᴛʜɪꜱ ᴍᴏᴠɪᴇ ꜰɪʟᴇ/ᴠɪᴅᴇᴏ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ <b><u><code>{get_time(DELETE_TIME)}</code></u> 🫥 <i></b>"
-        "(ᴅᴜᴇ ᴛᴏ ᴄᴏᴘʏʀɪɢʜᴛ ɪꜱꜱᴜᴇꜱ)</i>.\n\n"
-        "<b><i>ᴘʟᴇᴀꜱᴇ ꜰᴏʀᴡᴀʀᴅ ᴛʜɪꜱ ꜰɪʟᴇ ᴛᴏ ꜱᴏᴍᴇᴡʜᴇʀᴇ ᴇʟꜱᴇ ᴀɴᴅ ꜱᴛᴀʀᴛ ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴛʜᴇʀᴇ</i></b>",
-        quote=True
-    )     
-    await asyncio.sleep(DELETE_TIME)
-    await msg.delete()
-    await k.edit_text("<b>ʏᴏᴜʀ ᴠɪᴅᴇᴏ / ꜰɪʟᴇ ɪꜱ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴅᴇʟᴇᴛᴇᴅ !!</b>")
-    return
+            await message.reply_text(
+                "🚫 Daily download limit reached. Buy premium to get unlimited access.",
+                reply_markup=reply_markup
+            )
+            return
+        await db.increment_user_limit(user_id)
+        remaining = FILES_LIMIT - count - 1
+        await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
+
+msg = await client.send_cached_media(
+    chat_id=user_id,
+    file_id=file_id,
+    caption=f_caption,
+    protect_content=settings.get('file_secure', PROTECT_CONTENT),
+    reply_markup=InlineKeyboardMarkup(btn)
+)
+k = await msg.reply(
+    f"<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>
+
+"
+    f"THIS MOVIE FILE/VIDEO WILL BE DELETED IN <b><u><code>{get_time(DELETE_TIME)}</code></u></b> 🫥 (Due to copyright issues).
+
+"
+    f"<b><i>PLEASE FORWARD THIS FILE SOMEWHERE ELSE AND START DOWNLOADING THERE</i></b>"
+)
+
+await asyncio.sleep(DELETE_TIME)
+await msg.delete()
+await k.edit_text("<b>Your video/file is successfully deleted!</b>")
+return
 
 @Client.on_message(filters.command('logs') & filters.user(ADMINS))
 async def log_file(bot, message):
