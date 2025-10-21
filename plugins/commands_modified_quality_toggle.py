@@ -368,7 +368,7 @@ async def start(client, message):
     if not is_premium:
         count = await db.get_user_limit(message.from_user.id)
         if count >= FILES_LIMIT:
-            # 🚫 Limit reached message + Buy Premium button
+            # ✅ Alert message with "Buy Premium" button
             buttons = [
                 [InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium")]
             ]
@@ -380,20 +380,19 @@ async def start(client, message):
         remaining = FILES_LIMIT - count - 1
         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
 
-# ✅ Send cached media normally
+# ✅ Continue sending file
 msg = await client.send_cached_media(
     chat_id=message.from_user.id,
     file_id=file_id,
-    caption=f_caption,
     protect_content=settings.get('file_secure', PROTECT_CONTENT),
     reply_markup=InlineKeyboardMarkup(btn)
 )
 
-# ✅ Callback handler for Buy Premium
+# ✅ Callback handler for "Buy Premium"
 @Client.on_callback_query(filters.regex("buy_premium"))
 async def buy_premium_cb(client, callback_query):
     await callback_query.message.edit_text(
-        "💎 **Upgrade to Premium**\n\nUnlock **unlimited downloads**, faster access, and priority support!",
+        "💎 **Upgrade to Premium**\n\nUnlock unlimited downloads and priority support!",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("🛒 Buy Now", url="https://t.me/YourBotUsername?start=premium")],
             [InlineKeyboardButton("⬅️ Back", callback_data="close")]
@@ -435,7 +434,7 @@ async def buy_premium_cb(client, callback_query):
             else:
             
                 btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
-            if IS_FILE_LIMIT:
+          if IS_FILE_LIMIT:
     is_premium = await db.has_premium_access(message.from_user.id)
     if not is_premium:
         count = await db.get_user_limit(message.from_user.id)
@@ -469,7 +468,7 @@ async def buy_premium_cb(client, callback_query):
             [InlineKeyboardButton("🛒 Buy Now", url="https://t.me/YourBotUsername?start=premium")],
             [InlineKeyboardButton("⬅️ Back", callback_data="close")]
         ])
-    )
+            )  
 
             filetype = msg.media
             file = getattr(msg, filetype.value)
@@ -563,7 +562,7 @@ async def buy_premium_cb(client, callback_query):
     if not is_premium:
         count = await db.get_user_limit(message.from_user.id)
         if count >= FILES_LIMIT:
-            # 🚫 Limit reached message + Buy Premium button
+            # ✅ Alert message with "Buy Premium" button
             buttons = [
                 [InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium")]
             ]
@@ -575,20 +574,19 @@ async def buy_premium_cb(client, callback_query):
         remaining = FILES_LIMIT - count - 1
         await message.reply_text(f"📦 Remaining limit: {remaining}/{FILES_LIMIT}")
 
-# ✅ Send cached media normally
+# ✅ Continue sending file
 msg = await client.send_cached_media(
     chat_id=message.from_user.id,
     file_id=file_id,
-    caption=f_caption,
     protect_content=settings.get('file_secure', PROTECT_CONTENT),
     reply_markup=InlineKeyboardMarkup(btn)
 )
 
-# ✅ Callback handler for Buy Premium
+# ✅ Callback handler for "Buy Premium"
 @Client.on_callback_query(filters.regex("buy_premium"))
 async def buy_premium_cb(client, callback_query):
     await callback_query.message.edit_text(
-        "💎 **Upgrade to Premium**\n\nUnlock **unlimited downloads**, faster access, and priority support!",
+        "💎 **Upgrade to Premium**\n\nUnlock unlimited downloads and priority support!",
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton("🛒 Buy Now", url="https://t.me/YourBotUsername?start=premium")],
             [InlineKeyboardButton("⬅️ Back", callback_data="close")]
