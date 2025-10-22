@@ -360,7 +360,7 @@ async def start(client, message):
                                 photo=random.choice(PICS),
                                 caption=(
                                     f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
-                                    f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                                    f"⏳ Your limit resets automatically in 24 hours.\n\n"
                                     f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
                                 ),
                                 reply_markup=reply_markup,
@@ -439,7 +439,7 @@ async def start(client, message):
                             photo=random.choice(PICS),
                             caption=(
                                 f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
-                                f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                                f"⏳ Your limit resets automatically in 24 hours.\n\n"
                                 f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
                             ),
                             reply_markup=reply_markup,
@@ -549,7 +549,7 @@ async def start(client, message):
                     photo=random.choice(PICS),
                     caption=(
                         f"🚫 <b>You’ve reached your daily file limit of {FILES_LIMIT}.</b>\n\n"
-                        f"⏳ Your limit resets automatically in {RESET_HOURS} hours.\n\n"
+                        f"⏳ Your limit resets automatically in 24 hours.\n\n"
                         f"💎 <b>Upgrade to Premium</b> for unlimited access and faster downloads!"
                     ),
                     reply_markup=reply_markup,
