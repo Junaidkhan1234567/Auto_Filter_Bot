@@ -371,18 +371,13 @@ async def start(client, message):
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        async def has_premium_access(user_id):
+                        def is_premium(user_id):
     return user_id in premium_users
-
 
 async def get_user_limit(user_id):
     return user_limits.get(user_id, 0)
-
-
 async def increment_user_limit(user_id):
     user_limits[user_id] = user_limits.get(user_id, 0) + 1
-
-
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
     user_id = message.from_user.id
@@ -459,9 +454,8 @@ if __name__ == "__main__":
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        async def has_premium_access(user_id):
+                        def is_premium(user_id):
     return user_id in premium_users
-
 
 async def get_user_limit(user_id):
     return user_limits.get(user_id, 0)
@@ -599,9 +593,8 @@ if __name__ == "__main__":
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
-                        async def has_premium_access(user_id):
+                        def is_premium(user_id):
     return user_id in premium_users
-
 
 async def get_user_limit(user_id):
     return user_limits.get(user_id, 0)
