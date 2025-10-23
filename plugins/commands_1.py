@@ -19,7 +19,8 @@ from database.ia_filterdb import Media, Media2, get_file_details, unpack_new_fil
 from database.users_chats_db import db
 from info import *
 from utils import get_settings, save_group_settings, is_subscribed, is_req_subscribed, get_size, get_shortlink, is_check_admin, temp, get_readable_time, get_time, generate_settings_text, log_error, clean_filename
-
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 logging.basicConfig(level=logging.ERROR)
@@ -27,6 +28,9 @@ logger = logging.getLogger(__name__)
 
 TIMEZONE = "Asia/Kolkata"
 BATCH_FILES = {}
+
+user_limits = {}
+premium_users = set()
 
 # ✅ Free users ko sirf 360p & 480p quality allow
 FREE_QUALITIES = ["360p", "480p"]
