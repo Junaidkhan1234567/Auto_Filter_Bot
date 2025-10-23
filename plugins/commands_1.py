@@ -372,7 +372,7 @@ async def start(client, message):
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         def is_premium(user_id):
-    return user_id in premium_users
+                            return user_id in premium_users
 
 async def get_user_limit(user_id):
     return user_limits.get(user_id, 0)
@@ -455,7 +455,7 @@ if __name__ == "__main__":
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         def is_premium(user_id):
-    return user_id in premium_users
+                            return user_id in premium_users
 
 async def get_user_limit(user_id):
     return user_limits.get(user_id, 0)
@@ -594,7 +594,7 @@ if __name__ == "__main__":
                     if not is_premium:
                         count = await db.get_user_limit(message.from_user.id)
                         def is_premium(user_id):
-    return user_id in premium_users
+                            return user_id in premium_users
 
 async def get_user_limit(user_id):
     return user_limits.get(user_id, 0)
