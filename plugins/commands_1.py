@@ -374,34 +374,50 @@ async def start(client, message):
                         def is_premium(user_id):
                             return user_id in premium_users
 
+def is_premium(user_id):
+    return user_id in premium_users
+
+
 async def get_user_limit(user_id):
     return user_limits.get(user_id, 0)
+
+
 async def increment_user_limit(user_id):
     user_limits[user_id] = user_limits.get(user_id, 0) + 1
+
+
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
     user_id = message.from_user.id
 
     if IS_FILE_LIMIT:
-        is_premium = await has_premium_access(user_id)
-        if not is_premium:
+        if not is_premium(user_id):
             count = await get_user_limit(user_id)
+
             if count >= FILES_LIMIT:
                 buttons = [
-                    [InlineKeyboardButton("ðŸ’Ž Buy Premium", callback_data="buy_premium")]
+                    [InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium")]
                 ]
                 return await message.reply_text(
-                    "ðŸš« Daily download limit reached. Try again after 24 hours.",
+                    "🚫 Daily download limit reached. Try again after 24 hours.",
                     reply_markup=InlineKeyboardMarkup(buttons)
                 )
+
             await increment_user_limit(user_id)
             remaining = FILES_LIMIT - count - 1
-            await message.reply_text(f"âœ… Welcome! You have {remaining} free downloads remaining today.")
-        else:
-            await message.reply_text("ðŸ’Ž Welcome Premium user! Unlimited downloads available.")
-    else:
-        await message.reply_text("âœ… Welcome! Unlimited downloads enabled.")
+            await message.reply_text(
+                f"✅ Welcome! You have {remaining} free downloads remaining today."
+            )
 
+        else:
+            await message.reply_text(
+                "💎 Welcome Premium user! Unlimited downloads available."
+            )
+
+    else:
+        await message.reply_text(
+            "✅ Welcome! Unlimited downloads enabled."
+        )
 
 @app.on_callback_query(filters.regex("buy_premium"))
 async def buy_premium_callback(client, callback_query):
