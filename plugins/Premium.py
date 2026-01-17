@@ -263,5 +263,74 @@ async def successful_premium_payment(client, message):
     except Exception as e:
         print(f"Error Processing Premium Payment: {e}")
         await message.reply("✅ Thank You For Your Payment! (Error Logging Details)")
+# 📸 SCREENSHOT HANDLER (Direct Auto-Forward to Admin)
+# -------------------------------------------------------------------------
+@Client.on_message(filters.photo & filters.private)
+async def payment_screenshot_handler(client, message: Message):
+    user_id = message.from_user.id
+    user_name = message.from_user.mention
+    user_note = message.caption if message.caption else "No caption provided"
+    msg = await message.reply_text("🔄 𝘚𝘦𝘯𝘥𝘪𝘯𝘨 𝘱𝘢𝘺𝘮𝘦𝘯𝘵 𝘴𝘤𝘳𝘦𝘦𝘯𝘴𝘩𝘰𝘵 𝘵𝘰 𝘈𝘥𝘮𝘪𝘯𝘴... 𝘗𝘭𝘦𝘢𝘴𝘦 𝘸𝘢𝘪𝘵.")
+    admin_btns = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("✅ Approve (1 Day)", callback_data=f"add_prem_{user_id}_1"),
+            InlineKeyboardButton("✅ Approve (1 Week)", callback_data=f"add_prem_{user_id}_7")
+        ],
+        [
+            InlineKeyboardButton("✅ Approve (1 Month)", callback_data=f"add_prem_{user_id}_30")
+        ],
+        [
+            InlineKeyboardButton("❌ Reject", callback_data=f"reject_pay_{user_id}")
+        ]
+    ])
+    
+    try:
+        await client.send_photo(
+            chat_id=PREMIUM_LOGS,
+            photo=message.photo.file_id,
+            caption=f"🧾 **New Payment Screenshot**\n\n👤 <b>User:</b> {user_name}\n🆔 <b>ID:</b> <code>{user_id}</code>\n📝 <b>Note:</b> {user_note}",
+            reply_markup=admin_btns
+        )
+        await msg.edit_text("✅ 𝘚𝘤𝘳𝘦𝘦𝘯𝘴𝘩𝘰𝘵 𝘴𝘦𝘯𝘵!\n𝘈𝘥𝘮𝘪𝘯 𝘸𝘪𝘭𝘭 𝘷𝘦𝘳𝘪𝘧𝘺 𝘢𝘯𝘥 𝘢𝘤𝘵𝘪𝘷𝘢𝘵𝘦 𝘺𝘰𝘶𝘳 𝘱𝘭𝘢𝘯 𝘴𝘩𝘰𝘳𝘵𝘭𝘺.")
+    except Exception as e:
+        await msg.edit_text(f"❌ Error sending to admin: {e}")
 
+# -------------------------------------------------------------------------
+# ✅ APPROVE PAYMENT CALLBACK
+# -------------------------------------------------------------------------
+@Client.on_callback_query(filters.regex(r"^add_prem_"))
+async def approve_payment(client, callback_query: CallbackQuery):
+    _, _, user_id, days = callback_query.data.split("_")
+    user_id = int(user_id)
+    days = int(days)
+    new_expiry = await db.add_premium_access(user_id, days)
+    expiry_ist = new_expiry.astimezone(pytz.timezone("Asia/Kolkata"))
+    expiry_str = expiry_ist.strftime("%d-%m-%Y %I:%M %p")
+    try:
+        await client.send_message(
+            user_id,
+            f"🎉 <b>𝘗𝘢𝘺𝘮𝘦𝘯𝘵 𝘈𝘱𝘱𝘳𝘰𝘷𝘦𝘥!</b>\n\n💎 <b>𝘗𝘳𝘦𝘮𝘪𝘶𝘮 𝘈𝘤𝘵𝘪𝘷𝘢𝘵𝘦𝘥</b> 𝘧𝘰𝘳 {days} 𝘋𝘢𝘺𝘴 .\n🗓 <b>𝘌𝘹𝘱𝘪𝘳𝘺:</b> {expiry_str}\n\n<i>𝘌𝘯𝘫𝘰𝘺 𝘜𝘯𝘭𝘪𝘮𝘪𝘵𝘦𝘥 𝘈𝘤𝘤𝘦𝘴𝘴!</i>"
+        )
+    except:
+        pass 
+    await callback_query.message.edit_caption(
+        caption=f"✅ <b>Approved by {callback_query.from_user.mention}</b>\n\n🆔 User: <code>{user_id}</code>\n⏳ Added: {days} Days"
+    )
+
+# -------------------------------------------------------------------------
+# ❌ REJECT PAYMENT CALLBACK
+# -------------------------------------------------------------------------
+@Client.on_callback_query(filters.regex(r"^reject_pay_"))
+async def reject_payment(client, callback_query: CallbackQuery):
+    user_id = int(callback_query.data.split("_")[2])
+    try:
+        await client.send_message(
+            user_id,
+            f"❌ <b>𝘗𝘢𝘺𝘮𝘦𝘯𝘵 𝘙𝘦𝘫𝘦𝘤𝘵𝘦𝘥.</b>\n\n<i>𝘗𝘰𝘴𝘴𝘪𝘣𝘭𝘦 𝘳𝘦𝘢𝘴𝘰𝘯𝘴:</i>\n- 𝘐𝘯𝘷𝘢𝘭𝘪𝘥 𝘚𝘤𝘳𝘦𝘦𝘯𝘴𝘩𝘰𝘵\n- 𝘗𝘢𝘺𝘮𝘦𝘯𝘵 𝘯𝘰𝘵 𝘳𝘦𝘤𝘦𝘪𝘷𝘦𝘥\n- 𝘞𝘳𝘰𝘯𝘨 𝘈𝘮𝘰𝘶𝘯𝘵 \n\n<i>𝘊𝘰𝘯𝘵𝘢𝘤𝘵 𝘈𝘥𝘮𝘪𝘯 𝘧𝘰𝘳 𝘴𝘶𝘱𝘱𝘰𝘳𝘵. @{OWNER_USERNAME}</i>"
+        )
+    except:
+        pass
+    await callback_query.message.edit_caption(
+        caption=f"❌ <b>Rejected by {callback_query.from_user.mention}</b>\n\n🆔 User: <code>{user_id}</code>"
+    )
 
