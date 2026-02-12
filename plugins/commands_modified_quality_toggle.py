@@ -119,7 +119,15 @@ async def start(client, message):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
-        return
+        # ⏳ Auto delete after 15 seconds
+    await asyncio.sleep(15)
+    try:
+        await sent.delete()
+        await message.delete()
+    except Exception as e:
+        print(f"Auto delete failed: {e}")
+
+    return
 
     if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
         buttons = [[
@@ -141,7 +149,15 @@ async def start(client, message):
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
-        return
+        # ⏳ Auto delete after 15 seconds
+    await asyncio.sleep(15)
+    try:
+        await sent.delete()
+        await message.delete()
+    except Exception as e:
+        print(f"Auto delete failed: {e}")
+
+    return
     if message.command[1].startswith("reff_"):
         try:
             user_id = int(message.command[1].split("_")[1])
