@@ -137,63 +137,114 @@ async def get_movie_details(query, id=False, file=None):
 async def get_movie_detailsx(query, id=False, file=None):
     base_url = "https://bharath-boy-api.vercel.app/api/movie-posters"
     q = str(query).strip()
+
     try:
         async with aiohttp.ClientSession() as session:
-            params = {"query": q, "api_key": TMDB_API_KEY}
+            params = {
+                "query": q,
+                "api_key": TMDB_API_KEY
+            }
+
             async with session.get(base_url, params=params) as resp:
+
                 if resp.status != 200:
                     text = await resp.text()
-                    logger.error(f"API request failed [{resp.status}] for query={q}\n {text}")
-                    return await resp.json()
-                
-                data = await resp.json()
+
+                    logger.error(
+                        f"API request failed [{resp.status}] for query={q}\n{text}"
+                    )
+
+                    return {
+                        "error": f"HTTP {resp.status}",
+                        "message": text
+                    }
+
+                try:
+                    data = await resp.json()
+                except Exception as e:
+                    logger.error(f"Invalid JSON response: {e}")
+
+                    return {
+                        "error": "INVALID_JSON",
+                        "message": str(e)
+                    }
+
     except Exception as e:
         logger.error(f"An error occurred in get_movie_detailsx: {e}")
-        return None
 
-    # Normalize fields
+        return {
+            "error": str(e)
+        }
+
     details = {}
+
     details['title'] = data.get('title') or data.get('localized_title')
-    details['year'] = (data.get('year', 0)) if data.get('year') else None
+    details['year'] = data.get('year')
     details['release_date'] = data.get('release_date')
-    details['rating'] = round(float(data.get('rating', 0)), 1) if data.get('rating') is not None else None
-    details['votes'] = int(data.get('votes', 0))
+
+    try:
+        details['rating'] = round(float(data.get('rating', 0)), 1)
+    except Exception:
+        details['rating'] = None
+
+    try:
+        details['votes'] = int(data.get('votes', 0))
+    except Exception:
+        details['votes'] = 0
+
     details['runtime'] = data.get('runtime')
     details['certificates'] = data.get('certificates')
     details['tmdb_url'] = data.get('url')
-    
+
     for key in ('genres', 'languages', 'countries'):
         raw = data.get(key)
-        details[key] = [s.strip() for s in raw.split(',')] if raw else []
-    for role in ('director', 'writer', 'producer', 'composer', 'cinematographer', 'cast'):
+        details[key] = [x.strip() for x in raw.split(',')] if raw else []
+
+    for role in (
+        'director',
+        'writer',
+        'producer',
+        'composer',
+        'cinematographer',
+        'cast'
+    ):
         raw = data.get(role)
-        details[role] = [s.strip() for s in raw.split(',')] if raw else []
-        
+        details[role] = [x.strip() for x in raw.split(',')] if raw else []
+
     details['plot'] = data.get('plot')
     details['tagline'] = data.get('tagline')
-    details['box_office'] = (data.get('box_office', 0)) if data.get('box_office') else None
+    details['box_office'] = data.get('box_office')
+
     raw_dist = data.get('distributors')
-    details['distributors'] = [d.strip() for d in raw_dist.split(',')] if raw_dist else []
+    details['distributors'] = (
+        [x.strip() for x in raw_dist.split(',')]
+        if raw_dist else []
+    )
+
     details['imdb_id'] = data.get('imdb_id')
     details['tmdb_id'] = data.get('tmdb_id')
-    
+
     posters = data.get('images', {}).get('posters', {})
     original_language = data.get('images', {}).get('original_language')
+
     poster_url = data.get('poster_url')
+
     if not poster_url:
-        for key in ('en', original_language, 'xx'):
-            if key and posters.get(key):
-                poster_url = posters[key][0]
+        for lang in ('en', original_language, 'xx'):
+            if lang and posters.get(lang):
+                poster_url = posters[lang][0]
                 break
+
     details['poster_url'] = poster_url
 
     backdrops = data.get('images', {}).get('backdrops', {})
-    original_language = data.get('images', {}).get('original_language')
     backdrop_url = None
-    for key in ('en', original_language, 'xx'):
-        if key and backdrops.get(key):
-            backdrop_url = backdrops[key][0]
+
+    for lang in ('en', original_language, 'xx'):
+        if lang and backdrops.get(lang):
+            backdrop_url = backdrops[lang][0]
             break
+
     details['backdrop_url'] = backdrop_url
 
     return details
