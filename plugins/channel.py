@@ -253,15 +253,16 @@ async def _process_with_lock(bot, filename, caption, media_info, base_name, proc
         db.movie_updates = db.db.movie_updates
 
     movie_doc = await db.movie_updates.find_one({"_id": base_name})
-    global error_tmdb
-    error_tmdb=False
 
-    # Extract DB file_id and file_size
+    global error_tmdb
+    error_tmdb = False
+
     try:
         file_id, _ = unpack_new_file_id(media.file_id)
     except Exception:
-        file_id = 'unknown_id'
-    file_size = media.file_size if hasattr(media, 'file_size') else 0
+        file_id = "unknown_id"
+
+    file_size = media.file_size if hasattr(media, "file_size") else 0
 
     file_data = {
         "filename": filename,
@@ -277,58 +278,110 @@ async def _process_with_lock(bot, filename, caption, media_info, base_name, proc
         "file_size": file_size
     }
 
+    # Movie does not exist yet
     if not movie_doc:
+
         if TMDB_POSTER:
             details = await get_movie_detailsx(base_name)
-            if details.get("error"):
-                error_tmdb=True
-                logger.info("TMDB error switching to IMDB")
+
+            if not details or details.get("error"):
+                error_tmdb = True
+                logger.info(
+                    f"TMDB failed for '{base_name}', switching to IMDb"
+                )
                 details = await get_movie_details(base_name) or {}
+
         else:
             details = await get_movie_details(base_name) or {}
 
+        if not details:
+            details = {}
+
         raw_genres = details.get("genres", "N/A")
+
         if isinstance(raw_genres, str):
             genre_list = [g.strip() for g in raw_genres.split(",")]
-            genres = ", ".join(g for g in genre_list if g in STANDARD_GENRES) or "N/A"
+            genres = ", ".join(
+                g for g in genre_list
+                if g in STANDARD_GENRES
+            ) or "N/A"
         else:
-            genres = ", ".join(g for g in raw_genres if g in STANDARD_GENRES) or "N/A"
+            genres = ", ".join(
+                g for g in raw_genres
+                if g in STANDARD_GENRES
+            ) or "N/A"
+
         movie_doc = {
             "_id": base_name,
             "files": [file_data],
-            "poster_url": details.get("backdrop_url") if LANDSCAPE_POSTER and TMDB_POSTER and not error_tmdb else details.get("poster_url"),
+            "poster_url": (
+                details.get("backdrop_url")
+                if LANDSCAPE_POSTER
+                and TMDB_POSTER
+                and not error_tmdb
+                else details.get("poster_url")
+            ),
             "genres": genres,
             "rating": details.get("rating", "N/A"),
-            "imdb_url": details.get("url", "")if not TMDB_POSTER else details.get("tmdb_url"),
+            "imdb_url": (
+                details.get("tmdb_url")
+                if TMDB_POSTER and not error_tmdb
+                else details.get("url", "")
+            ),
             "year": media_info["year"] or details.get("year"),
             "tag": media_info["tag"],
             "ott_platform": media_info["ott_platform"],
             "message_id": None,
             "is_photo": False
         }
+
         try:
             await db.movie_updates.insert_one(movie_doc)
+
             await send_movie_update(bot, base_name)
-            movie_doc = await db.movie_updates.find_one({"_id": base_name})
+
+            movie_doc = await db.movie_updates.find_one(
+                {"_id": base_name}
+            )
+
         except DuplicateKeyError:
-            movie_doc = await db.movie_updates.find_one({"_id": base_name})
+
+            movie_doc = await db.movie_updates.find_one(
+                {"_id": base_name}
+            )
+
             if movie_doc:
-                if any(f["filename"] == filename for f in movie_doc["files"]):
+
+                if any(
+                    f["filename"] == filename
+                    for f in movie_doc["files"]
+                ):
                     return
+
                 await db.movie_updates.update_one(
                     {"_id": base_name},
                     {"$push": {"files": file_data}}
                 )
+
                 movie_doc["files"].append(file_data)
+
                 schedule_update(bot, base_name)
+
     else:
-        if any(f["filename"] == filename for f in movie_doc["files"]):
+
+        if any(
+            f["filename"] == filename
+            for f in movie_doc["files"]
+        ):
             return
+
         await db.movie_updates.update_one(
             {"_id": base_name},
             {"$push": {"files": file_data}}
         )
+
         movie_doc["files"].append(file_data)
+
         schedule_update(bot, base_name)
 
 async def send_movie_update(bot, base_name):
