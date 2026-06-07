@@ -313,7 +313,7 @@ async def start(client, message):
                         buttons = [[
                             InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")
                         ],[
-                            InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)
+                            InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)
                         ]]
                         reply_markup = InlineKeyboardMarkup(buttons)
                         await message.reply_photo(
@@ -344,7 +344,7 @@ async def start(client, message):
                     
                     btn = [
                         [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                        [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                        [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
                     ]
                 elif STREAM_MODE and PREMIUM_STREAM_MODE:
                     
@@ -352,16 +352,16 @@ async def start(client, message):
                         
                         btn = [
                             [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
-                            [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                            [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
                         ]
                     else:
                         
                         btn = [
                             [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                            [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                            [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
                         ]
                 else:
-                    btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
+                    btn = [[InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]]
             
                 if IS_FILE_LIMIT:
                     is_premium = await db.has_premium_access(message.from_user.id)
@@ -399,22 +399,22 @@ async def start(client, message):
             if STREAM_MODE and not PREMIUM_STREAM_MODE:
                 btn = [
                     [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                    [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                    [InlineKeyboardButton(''🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
                 ]
             elif STREAM_MODE and PREMIUM_STREAM_MODE:
                 if not await db.has_premium_access(message.from_user.id):
                    btn = [
                         [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
-                        [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                        [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
                     ]
                 else:
                     btn = [
                         [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                        [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                        [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
                     ]
             else:
             
-                btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]] 
+                btn = [[InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]] 
             if IS_FILE_LIMIT:
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
@@ -471,7 +471,7 @@ async def start(client, message):
             buttons = [[
                 InlineKeyboardButton('🎟 Upgrade to Premium 🎟', callback_data="premium_info")
             ],[
-                InlineKeyboardButton('📌 Join Updates Channel 📌', url=UPDATE_CHNL_LNK)
+                InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)
             ]]
             reply_markup = InlineKeyboardMarkup(buttons)
             await message.reply_photo(
@@ -502,21 +502,21 @@ async def start(client, message):
     if STREAM_MODE and not PREMIUM_STREAM_MODE:
         btn = [
             [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-            [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+            [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
         ]
     elif STREAM_MODE and PREMIUM_STREAM_MODE:
         if not await db.has_premium_access(message.from_user.id):
             btn = [
                 [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'prestream')],
-                [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
             ]
         else:
             btn = [
                 [InlineKeyboardButton('🚀 ꜰᴀꜱᴛ ᴅᴏᴡɴʟᴏᴀᴅ / ᴡᴀᴛᴄʜ ᴏɴʟɪɴᴇ 🖥️', callback_data=f'generate_stream_link:{file_id}')],
-                [InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
+                [InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]  # Keep this line unchanged  
             ]
     else:
-        btn = [[InlineKeyboardButton('📌 ᴊᴏɪɴ ᴜᴘᴅᴀᴛᴇꜱ ᴄʜᴀɴɴᴇʟ 📌', url=UPDATE_CHNL_LNK)]]
+        btn = [[InlineKeyboardButton('🔞 𝙼𝙰𝚂𝚃𝙸 𝚃𝙸𝙼𝙴 📌', url=UPDATE_CHNL_LNK)]]
     if IS_FILE_LIMIT:
                     is_premium = await db.has_premium_access(message.from_user.id)
                     if not is_premium:
